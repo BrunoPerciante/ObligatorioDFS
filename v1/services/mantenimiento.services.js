@@ -5,7 +5,7 @@ export const obtenerMantenimientoService = async (page, limit) => {
     page = Number(page) || 1;
     const skip = (page - 1) * limit;
     const totalMantenimientos = await Mantenimiento.countDocuments();
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(totalMantenimientos / limit);
     const mantenimientos = await Mantenimiento.find().skip(skip).limit(limit);
     return { mantenimientos, totalPages, page, limit };
 }
