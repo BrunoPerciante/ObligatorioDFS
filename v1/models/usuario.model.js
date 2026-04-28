@@ -26,7 +26,7 @@ const usuarioSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ['duenio', 'taller', 'usuario'],
+      enum: ['duenio', 'taller'],
       default: 'usuario',
     },
     nombre: {
@@ -39,7 +39,8 @@ const usuarioSchema = new Schema(
     },
     plan: {
       type: String,
-      trim: true,
+      enum: ['plus', 'premium'],
+      default: 'plus',
     },
     nombreTaller: {
       type: String,
@@ -49,6 +50,10 @@ const usuarioSchema = new Schema(
       type: String,
       trim: true,
     },
+    vehiculos: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Vehiculo',
+    }],
   },
   {
     timestamps: true,

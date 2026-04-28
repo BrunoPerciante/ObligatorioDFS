@@ -52,3 +52,4 @@ export const eliminarDuenio = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar dueño', error: error.message });
   }
 };
+
