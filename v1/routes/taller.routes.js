@@ -5,6 +5,7 @@ import {
   modificarTaller,
   eliminarTaller,
 } from '../controllers/taller.controller.js';
+import { rolAuthMiddleware } from '../middlewares/rolAuth.middleware.js';
 import { validateBodyMiddleware } from '../middlewares/validateBody.middleware.js';
 import { updateTallerSchema } from '../validators/taller.validators.js';
 import { authenticateMiddleware } from '../middlewares/authenticate.middleware.js';
