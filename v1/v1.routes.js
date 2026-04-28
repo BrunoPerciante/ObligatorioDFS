@@ -8,12 +8,14 @@ import aiRouter from "./routes/ai.routes.js";
 import mantenimientoRouter from "./routes/mantenimiento.routes.js";
 
 import { authenticateMiddleware } from "./middlewares/authenticate.middleware.js";
+import uploadsRouter from "./routes/uploads.routes.js"
 
 const router = express.Router({mergeParams:true});
 
 //peticiones que llegan a /v1
 //rutas de login y registro de usuarios, sin necesidad de token
 router.use("/auth", authRouter);
+router.use("/uploads",uploadsRouter);
 router.use("/ai", aiRouter);
 
 //middleware para verificar de token
