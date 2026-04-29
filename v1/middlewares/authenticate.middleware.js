@@ -15,7 +15,7 @@ export const authenticateMiddleware = (req, res, next) => {
         if (err) {
             return res.status(401).json({ message: "Token de autenticación inválido" });
         }
-        req.decoded = decoded;
+        req.usuario = decoded;
         next();
     });
 }
