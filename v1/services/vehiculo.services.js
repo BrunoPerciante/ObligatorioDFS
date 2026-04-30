@@ -11,7 +11,7 @@ export const agregarVehiculoService = async (vehiculoData) => {
         return { message: 'Usuario no encontrado' };
     }
 
-    const puedeAgregar = await validarLimiteVehiculos(usuario);
+    const puedeAgregar = await validarLimiteVehiculos(duenio);
     if (!puedeAgregar) {
         return { message: 'Los usuarios con plan Plus pueden tener máximo 4 vehículos' };
         }

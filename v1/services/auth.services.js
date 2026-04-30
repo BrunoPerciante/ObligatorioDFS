@@ -16,7 +16,7 @@ export const registrarUsuarioService = async (usuarioData) => {
     Number(process.env.SALT_ROUNDS) || 10
   );
 
-  const nuevoUsuario = new Usuario({ ...data, password: passwordHash });
+  const nuevoUsuario = new Usuario({ ...data });
   await nuevoUsuario.save();
 
   const token = jwt.sign(
