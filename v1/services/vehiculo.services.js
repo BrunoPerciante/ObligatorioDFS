@@ -1,4 +1,5 @@
 import Usuario from '../models/usuario.model.js';
+import Vehiculo from '../models/vehiculos.model.js';
 
 export const agregarVehiculoService = async (vehiculoData) => {
     const { duenio, ...data } = vehiculoData;
@@ -12,9 +13,7 @@ export const agregarVehiculoService = async (vehiculoData) => {
 
     const puedeAgregar = await validarLimiteVehiculos(usuario);
     if (!puedeAgregar) {
-        return res.status(400).json({ 
-            message: 'Los usuarios con plan Plus pueden tener máximo 4 vehículos'
-          });
+        return { message: 'Los usuarios con plan Plus pueden tener máximo 4 vehículos' };
         }
 
     const nuevoVehiculo = new Vehiculo({
