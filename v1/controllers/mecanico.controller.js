@@ -8,7 +8,7 @@ import {
 
 export const crearMecanico = async (req, res) => {
   try {
-    const { mecanico, message } = await agregarMecanicoService(req.body);
+    const { mecanico, message } = await agregarMecanicoService(req.validatedBody);
 
     if (message) {
       return res.status(400).json({ message });
@@ -42,7 +42,7 @@ export const obtenerMecanicoPorId = async (req, res) => {
 
 export const modificarMecanico = async (req, res) => {
   try {
-    const mecanico = await modificarMecanicoService(req.params.id, req.body);
+    const mecanico = await modificarMecanicoService(req.params.id, req.validatedBody);
     if (!mecanico) return res.status(404).json({ message: 'Mecanico no encontrado' });
     res.json({ message: 'Mecanico actualizado', mecanico });
   } catch (error) {
