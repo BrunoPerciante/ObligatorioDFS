@@ -4,19 +4,8 @@ import Mecanico from '../models/mecanicos.model.js';
 export const agregarMecanicoService = async (mecanicoData) => {
   const { taller, ...data } = mecanicoData;
 
-  const usuario = await Usuario.findById(taller);
-  if (!usuario) {
-    return { message: 'Usuario no encontrado' };
-  }
-
-  const puedeAgregar = await validarLimiteMecanicos(taller);
-  if (!puedeAgregar) {
-    return { message: 'Los usuarios con plan Plus pueden tener máximo 4 mecánicos' };
-  }
-
   const nuevoMecanico = new Mecanico({
-    ...data,
-    taller,
+    ...data
   });
 
   const mecanicoGuardado = await nuevoMecanico.save();

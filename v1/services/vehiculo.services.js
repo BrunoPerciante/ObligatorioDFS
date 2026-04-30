@@ -73,8 +73,7 @@ export const validarLimiteVehiculos = async (usuarioId) => {
 
 export const obtenerCantidadVehiculos = async (usuarioId) => {
   try {
-    const usuario = await Usuario.findById(usuarioId).populate('vehiculos');
-    return usuario ? usuario.vehiculos.length : 0;
+    return await Vehiculo.countDocuments({ duenio: usuarioId });
   } catch (error) {
     console.error('Error en obtenerCantidadVehiculos:', error);
     throw error;
