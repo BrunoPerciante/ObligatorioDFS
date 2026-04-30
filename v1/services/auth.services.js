@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const registrarUsuarioService = async (usuarioData) => {
-  const { confirmPassword, ...data } = usuarioData;
+  const { confirmPassword, password, ...data } = usuarioData;
 
   const emailExists = await Usuario.findOne({ email: data.email });
   if (emailExists) return { message: "El email ya está registrado" };
