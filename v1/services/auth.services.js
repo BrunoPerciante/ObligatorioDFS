@@ -25,7 +25,7 @@ export const registrarUsuarioService = async (usuarioData) => {
     { expiresIn: "1d" }
   );
 
-  return { usuario: nuevoUsuario, token };
+  return { usuario: data, token };
 };
 
 export const loginUsuarioService = async (email, password, role) => {
