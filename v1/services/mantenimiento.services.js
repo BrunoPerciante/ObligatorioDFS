@@ -1,12 +1,16 @@
 import Mantenimiento from "../models/mantenimientos.model.js";
 
-export const obtenerMantenimientoService = async (page, limit) => {
+export const obtenerMantenimientoService = async (page, limit, categoria) => {
   limit = Number(limit) || 5;
   page = Number(page) || 1;
   const skip = (page - 1) * limit;
-  const totalMantenimientos = await Mantenimiento.countDocuments();
+  const filtro = {};
+  if (categoria) {
+    filtro.categoria = categoria;
+  }
+  const totalMantenimientos = await Mantenimiento.countDocuments(filtro);
   const totalPages = Math.ceil(totalMantenimientos / limit);
-  const mantenimientos = await Mantenimiento.find()
+  const mantenimientos = await Mantenimiento.find(filtro)
     .skip(skip)
     .limit(limit)
     .populate('vehiculo', 'padron matricula marca modelo')

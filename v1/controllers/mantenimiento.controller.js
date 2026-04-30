@@ -8,8 +8,8 @@ import {
 
 export const obtenerMantenimiento = async (req, res) => {
   try {
-    const { page, limit } = req.query;
-    const respuesta = await obtenerMantenimientoService(page, limit);
+    const { page, limit, categoria } = req.query;
+    const respuesta = await obtenerMantenimientoService(page, limit, categoria);
     res.status(200).json({ message: "Mantenimientos obtenidos", data: respuesta });
   } catch (error) {
     console.error('Error al obtener mantenimientos:', error);
