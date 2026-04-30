@@ -7,6 +7,7 @@ import tallerRouter from "./routes/taller.routes.js";
 import aiRouter from "./routes/ai.routes.js";
 import mantenimientoRouter from "./routes/mantenimiento.routes.js";
 import mecanicoRouter from "./routes/mecanico.routes.js";
+import categoriaRouter from "./routes/categoria.routes.js";
 import { authenticateMiddleware } from "./middlewares/authenticate.middleware.js";
 import uploadsRouter from "./routes/uploads.routes.js"
 
@@ -28,5 +29,6 @@ router.use("/talleres", tallerRouter);
 router.use("/vehiculos", vehiculoRouter);
 router.use("/mantenimientos", mantenimientoRouter);
 router.use("/mecanicos", mecanicoRouter);
+router.use("/categorias", categoriaRouter);
 
 export default router;

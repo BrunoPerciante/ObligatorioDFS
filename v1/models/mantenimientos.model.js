@@ -12,6 +12,11 @@ const mantenimientoSchema = new Schema(
             type: String,
             required: true,
         },
+        categoria: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Categoria',
+            required: true,
+        },
         vehiculo: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Vehiculo',

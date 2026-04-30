@@ -6,12 +6,20 @@ export const obtenerMantenimientoService = async (page, limit) => {
   const skip = (page - 1) * limit;
   const totalMantenimientos = await Mantenimiento.countDocuments();
   const totalPages = Math.ceil(totalMantenimientos / limit);
-  const mantenimientos = await Mantenimiento.find().skip(skip).limit(limit);
+  const mantenimientos = await Mantenimiento.find()
+    .skip(skip)
+    .limit(limit)
+    .populate('vehiculo', 'padron matricula marca modelo')
+    .populate('taller', 'username nombreTaller')
+    .populate('categoria', 'nombre descripcion');
   return { mantenimientos, totalPages, page, limit };
 };
 
 export const obtenerMantenimientoPorIdService = async (id) => {
-  return Mantenimiento.findById(id);
+  return Mantenimiento.findById(id)
+    .populate('vehiculo', 'padron matricula marca modelo')
+    .populate('taller', 'username nombreTaller')
+    .populate('categoria', 'nombre descripcion');
 };
 
 export const crearMantenimientoService = async (mantenimientoData) => {
