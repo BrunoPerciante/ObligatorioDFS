@@ -4,12 +4,7 @@ const { Schema, model } = mongoose;
 
 const mecanicoSchema = new Schema(
     {
-        id: {
-            type: int,
-            required: true,
-            trim: true,
-            unique: true,
-        },
+        
         nombre: {
             type: String,
             required: true,
@@ -23,7 +18,6 @@ const mecanicoSchema = new Schema(
          taller: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'Usuario',
-                    required: true,
                 },
         
     }
