@@ -38,34 +38,3 @@ export const eliminarMecanicoService = async (id) => {
   }
   return mecanico;
 };
-
-export const validarLimiteMecanicos = async (usuarioId) => {
-  try {
-    const usuario = await Usuario.findById(usuarioId).populate('mecanicos');
-
-    if (!usuario) {
-      throw new Error('Usuario no encontrado');
-    }
-
-    if (usuario.plan === 'premium') {
-      return true;
-    }
-
-    if (usuario.plan === 'plus') {
-      return usuario.mecanicos.length < 4;
-    }
-  } catch (error) {
-    console.error('Error en validarLimiteMecanicos:', error);
-    throw error;
-  }
-};
-
-export const obtenerCantidadMecanicos = async (usuarioId) => {
-  try {
-    const usuario = await Usuario.findById(usuarioId).populate('mecanicos');
-    return usuario ? usuario.mecanicos.length : 0;
-  } catch (error) {
-    console.error('Error en obtenerCantidadMecanicos:', error);
-    throw error;
-  }
-};
