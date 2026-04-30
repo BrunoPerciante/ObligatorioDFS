@@ -25,7 +25,12 @@ export const registrarUsuarioService = async (usuarioData) => {
     { expiresIn: "1d" }
   );
 
-  return { usuario: data, token };
+  /*return { usuario: data, token };  cambie para solucionar registrodeñoexitoso Respuesta contiene token y usuario | AssertionError: expected { username: 'duenio5610007', …(5) } to have property '_id'
+*/
+  const userObj = nuevoUsuario.toObject();
+delete userObj.password;
+
+return { usuario: userObj, token };
   
 };
 
