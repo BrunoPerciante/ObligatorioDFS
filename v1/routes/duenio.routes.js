@@ -14,7 +14,7 @@ import { authenticateMiddleware } from '../middlewares/authenticate.middleware.j
 const router = express.Router({ mergeParams: true });
 
 router.get('/', authenticateMiddleware,  obtenerDuenios);
-router.get('/:id', authenticateMiddleware, rolAuthMiddleware(['duenio', 'taller']), obtenerDuenioPorId);
+router.get('/:id', authenticateMiddleware, obtenerDuenioPorId);
 router.put('/:id', authenticateMiddleware, rolAuthMiddleware(['duenio']), validateBodyMiddleware(updateDuenioSchema), modificarDuenio);
 router.delete('/:id', authenticateMiddleware, rolAuthMiddleware(['duenio']), eliminarDuenio);
 
