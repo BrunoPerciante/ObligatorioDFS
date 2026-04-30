@@ -54,7 +54,12 @@ const usuarioSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Vehiculo',
     }],
+    mecanicos: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Mecanico',
+    }]
   },
+
   {
     timestamps: true,
   }

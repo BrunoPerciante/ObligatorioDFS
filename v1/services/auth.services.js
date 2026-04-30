@@ -18,7 +18,6 @@ export const registrarUsuarioService = async (usuarioData) => {
 
   const nuevoUsuario = new Usuario({ ...data, password: passwordHash });
   await nuevoUsuario.save();
-  const usuarioSinContraseña = nuevoUsuario.select("-password");
 
   const token = jwt.sign(
     { id: nuevoUsuario._id, role: nuevoUsuario.role },
@@ -26,8 +25,8 @@ export const registrarUsuarioService = async (usuarioData) => {
     { expiresIn: "1d" }
   );
 
-  return { usuario: usuarioSinContraseña, token };
-
+  return { usuario: data, token };
+  
 };
 
 export const loginUsuarioService = async (email, password, role) => {
