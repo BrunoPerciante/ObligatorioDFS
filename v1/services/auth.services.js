@@ -12,15 +12,15 @@ export const registrarUsuarioService = async (usuarioData) => {
   if (usernameExists) return { message: "El nombre de usuario ya existe" };
 
   const passwordHash = bcrypt.hashSync(
-    data.password,
+    password,
     Number(process.env.SALT_ROUNDS) || 10
   );
 
-  const nuevoUsuario = new Usuario({ ...data });
+  const nuevoUsuario = new Usuario({ ...data, password: passwordHash });
   await nuevoUsuario.save();
 
   const token = jwt.sign(
-    { id: nuevoUsuario._id, role: nuevoUsuario.role }, 
+    { id: nuevoUsuario._id, role: nuevoUsuario.role },
     process.env.SECRET_KEY,
     { expiresIn: "1d" }
   );
