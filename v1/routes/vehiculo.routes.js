@@ -1,4 +1,5 @@
 import express from 'express';
+import {authenticateMiddleware}from"../middlewares/authenticate.middleware.js";
 import {
   obtenerVehiculos,
   obtenerVehiculoPorId,
@@ -11,10 +12,10 @@ import { crearVehiculoSchema } from '../validators/vehiculo.validators.js';
 
 const router = express.Router({ mergeParams: true });
 
-router.get('/', obtenerVehiculos);
-router.get('/:id', obtenerVehiculoPorId);
-router.post('/', validateBodyMiddleware(crearVehiculoSchema), crearVehiculo);
-router.put('/:id', validateBodyMiddleware(crearVehiculoSchema), modificarVehiculo);
-router.delete('/:id', eliminarVehiculo);
+router.get('/', authenticateMiddleware, obtenerVehiculos);
+router.get('/:id',authenticateMiddleware, obtenerVehiculoPorId);
+router.post('/',authenticateMiddleware, validateBodyMiddleware(crearVehiculoSchema), crearVehiculo);
+router.put('/:id', authenticateMiddleware,validateBodyMiddleware(crearVehiculoSchema), modificarVehiculo);
+router.delete('/:id', authenticateMiddleware, eliminarVehiculo);
 
 export default router;
