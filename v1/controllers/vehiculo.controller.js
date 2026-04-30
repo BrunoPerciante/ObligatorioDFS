@@ -1,6 +1,5 @@
 import Vehiculo from '../models/vehiculos.model.js';
-import Usuario from '../models/usuario.model.js';
-import { agregarVehiculoService, validarLimiteVehiculos } from '../services/vehiculo.services.js';
+import { agregarVehiculoService} from '../services/vehiculo.services.js';
 
 
 export const obtenerVehiculos = async (req, res) => {

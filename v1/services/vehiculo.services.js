@@ -17,7 +17,7 @@ export const agregarVehiculoService = async (vehiculoData) => {
         }
 
     const nuevoVehiculo = new Vehiculo({
-        ...vehiculoData,
+        ...data,
         duenio
     });
     
