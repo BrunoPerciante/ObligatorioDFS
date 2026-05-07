@@ -13,7 +13,13 @@ export const crearMantenimientoSchema = Joi.object({
         .messages({
             'string.empty': 'El servicio es obligatorio',
             'any.required': 'El servicio es obligatorio',
-        }), 
+        }),
+    descripcion: Joi.string()
+        .trim()
+        .allow('')
+        .messages({
+            'string.base': 'La descripción debe ser un texto',
+        }),
     categoria: Joi.string()
         .required()
         .messages({
@@ -30,17 +36,17 @@ export const crearMantenimientoSchema = Joi.object({
         .required()
         .messages({
             'string.pattern.base': 'El ID del taller debe ser un ObjectId válido',
-            'any.required': 'El taller es obligatorio', 
+            'any.required': 'El taller es obligatorio',
         }),
     kilometraje: Joi.number()
         .integer()
-        .min(0) 
+        .min(0)
         .required()
         .messages({
             'number.base': 'El kilometraje debe ser un número',
             'number.min': 'El kilometraje no puede ser negativo',
             'any.required': 'El kilometraje es obligatorio',
-        }), 
+        }),
     costo: Joi.number()
         .precision(2)
         .min(0)
