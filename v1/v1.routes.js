@@ -10,6 +10,7 @@ import mecanicoRouter from "./routes/mecanico.routes.js";
 import categoriaRouter from "./routes/categoria.routes.js";
 import { authenticateMiddleware } from "./middlewares/authenticate.middleware.js";
 import uploadsRouter from "./routes/uploads.routes.js"
+import vehiculoInfoRouter from "./routes/vehiculoInfo.routes.js";
 
 const router = express.Router({mergeParams:true});
 
@@ -18,6 +19,7 @@ const router = express.Router({mergeParams:true});
 router.use("/auth", authRouter);
 router.use("/uploads",uploadsRouter);
 router.use("/ai", aiRouter);
+router.use("/vehiculo-info", vehiculoInfoRouter);
 
 //middleware para verificar de token
 router.use(authenticateMiddleware);
