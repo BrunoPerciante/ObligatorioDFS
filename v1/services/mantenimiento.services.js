@@ -1,4 +1,5 @@
 import Mantenimiento from "../models/mantenimientos.model.js";
+import axios from 'axios';
 
 export const obtenerMantenimientoService = async (page, limit, categoria) => {
   limit = Number(limit) || 5;
@@ -27,7 +28,28 @@ export const obtenerMantenimientoPorIdService = async (id) => {
 };
 
 export const crearMantenimientoService = async (mantenimientoData) => {
-  const nuevoMantenimiento = new Mantenimiento(mantenimientoData);
+  const API_KEY = process.env.GEMINI_25_API_KEY;
+  const MODEL = 'gemini-2.5-flash';
+  const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+
+  const prompt = `Redactá de forma profesional, clara y muy breve la descripción de un mantenimiento vehicular. El taller realizó lo siguiente: ${mantenimientoData.servicio}. Devolvé solo la descripción, sin títulos ni explicaciones extra.`;
+
+  const response = await axios.post(ENDPOINT, {
+    contents: [{ parts: [{ text: prompt }] }]
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': API_KEY
+    }
+  });
+
+  const descripcion = response.data.candidates[0].content.parts[0].text;
+
+  const nuevoMantenimiento = new Mantenimiento({
+    ...mantenimientoData,
+    descripcion
+  });
+
   await nuevoMantenimiento.save();
   return nuevoMantenimiento;
 };

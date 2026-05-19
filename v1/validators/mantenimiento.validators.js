@@ -14,12 +14,7 @@ export const crearMantenimientoSchema = Joi.object({
             'string.empty': 'El servicio es obligatorio',
             'any.required': 'El servicio es obligatorio',
         }),
-    descripcion: Joi.string()
-        .trim()
-        .allow('')
-        .messages({
-            'string.base': 'La descripción debe ser un texto',
-        }),
+    
     categoria: Joi.string()
         .required()
         .messages({
