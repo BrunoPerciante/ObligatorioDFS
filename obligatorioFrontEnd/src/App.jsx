@@ -5,22 +5,25 @@ import ModalVehiculo from './components/modals/ModalVehiculo'
 import ModalMantenimiento from './components/modals/ModalMantenimiento'
 import ModalMecanico from './components/modals/ModalMecanico'
 import ModalCategoria from './components/modals/ModalCategoria'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 
 function App() {
   return (
-    <div>
-      {/* PÁGINAS PRINCIPALES */}
-      <AuthPage />
-      <DashboardDuenio />
-      <DashboardTaller />
+    <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<AuthPage />} />
+          <Route path="/duenio" element={<DashboardDuenio />} />
+          <Route path="/taller" element={<DashboardTaller />} />
+        </Routes>
 
-      {/* MODALES */}
+      {/* MODALES 
       <ModalVehiculo />
       <ModalMantenimiento />
       <ModalMecanico />
       <ModalCategoria />
-    </div>
+      */}
+    </BrowserRouter>
   )
 }
 

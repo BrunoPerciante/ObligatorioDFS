@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import LoginForm from '../components/auth/LoginForm';
 import RegisterForm from '../components/auth/RegisterForm';
 
@@ -7,6 +8,18 @@ const usuariosPrueba = [
 ]
 
 export default function AuthPage() {
+  const [pestanaActiva, setPestanaActiva] = useState('login'); // 'login' | 'registro'
+  const [rolLogin, setRolLogin] = useState('duenio'); // 'duenio' | 'taller'
+  const [rolRegistro, setRolRegistro] = useState('duenio');
+
+  function cambiarPestana(tab) {
+    setPestanaActiva(tab);
+  }
+
+  function toggleAuthMode() {
+    setPestanaActiva(prev => prev === 'login' ? 'registro' : 'login');
+  }
+
   return (
     <div id="page-auth" className="page active">
       <div className="auth-visual">
@@ -24,16 +37,39 @@ export default function AuthPage() {
         <div className="auth-logo">AUTO<span>TRACK</span></div>
 
         <div className="auth-tabs">
-          <button className="auth-tab active" onClick="switchAuthTab('login')">Ingresar</button>
-          <button className="auth-tab" onClick="switchAuthTab('registro')">Registrarse</button>
+          <button
+            className={`auth-tab ${pestanaActiva === 'login' ? 'active' : ''}`}
+            onClick={() => cambiarPestana('login')}
+          >
+            Ingresar
+          </button>
+          <button
+            className={`auth-tab ${pestanaActiva === 'registro' ? 'active' : ''}`}
+            onClick={() => cambiarPestana('registro')}
+          >
+            Registrarse
+          </button>
         </div>
 
-        <LoginForm />
-        <RegisterForm />
+        <LoginForm
+          activo={pestanaActiva === 'login'}
+          rol={rolLogin}
+          setRol={setRolLogin}
+          onLogin={() => { /* implementar login real aquí */ }}
+        />
+
+        <RegisterForm
+          activo={pestanaActiva === 'registro'}
+          rol={rolRegistro}
+          setRol={setRolRegistro}
+          onRegister={() => { /* implementar registro real aquí */ }}
+        />
 
         <div className="auth-switch">
-          <span id="auth-switch-text">¿No tenés cuenta?</span>
-          <button onClick="toggleAuthMode()" id="auth-switch-btn">Registrarse</button>
+          <span id="auth-switch-text">{pestanaActiva === 'login' ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?'}</span>
+          <button onClick={toggleAuthMode} id="auth-switch-btn">
+            {pestanaActiva === 'login' ? 'Registrarse' : 'Ingresar'}
+          </button>
         </div>
       </div>
     </div>
