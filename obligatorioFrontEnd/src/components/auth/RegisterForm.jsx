@@ -1,76 +1,162 @@
-export default function RegisterForm({ activo = false, rol = 'duenio', setRol = () => {}, onRegister = () => {} }) {
+import { joiResolver } from "@hookform/resolvers/joi";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { setUsuario, setRol, setLoading, setError } from "../../features/auth/auth.slice";
+
+export default function RegisterForm({ activo = false, rol = 'duenio', registerSchema }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector(state => state.auth);
+
+  const defaultValues = rol === 'duenio' 
+    ? {
+        email: '',
+        password: '',
+        confirmPassword: '',
+        nombre: ''
+      }
+    : {
+        email: '',
+        password: '',
+        confirmPassword: '',
+        nombreTaller: '',
+        telefono: ''
+      };
+
+  const { register, handleSubmit, formState: { errors, isDirty, isValid }, reset } = useForm({
+    resolver: joiResolver(registerSchema),
+    mode: 'onChange',
+    defaultValues
+  });
+
+  const procesarForm = async (data) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(setError(null));
+
+      // Aquí irá la llamada a tu API de registro
+      // const response = await fetch('/api/v1/auth/register', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ ...data, rol })
+      // });
+
+      // const result = await response.json();
+      // dispatch(setUsuario({ usuario: result.usuario, token: result.token }));
+      // dispatch(setRol(rol));
+
+      console.log('Registro datos:', { ...data, rol });
+      dispatch(setUsuario({ 
+        usuario: { 
+          email: data.email, 
+          nombre: rol === 'duenio' ? data.nombre : data.nombreTaller,
+          rol 
+        }, 
+        token: 'token-simulado' 
+      }));
+      dispatch(setRol(rol));
+
+      toast.success("¡Cuenta creada exitosamente!");
+      reset();
+      navigate(rol === 'duenio' ? "/dashboard-duenio" : "/dashboard-taller");
+    } catch (error) {
+      console.error('Error en registro:', error);
+      dispatch(setError(error.message || "Error al crear la cuenta"));
+      toast.error(error.message || "Error al crear la cuenta");
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
   return (
     <div id="auth-registro" className={`auth-form ${activo ? 'active' : ''}`}>
-      <div className="auth-tabs" style={{ marginBottom: '20px' }}>
-        <button
-          className={`auth-tab ${rol === 'duenio' ? 'active' : ''}`}
-          onClick={() => setRol('duenio')}
-        >
-          Dueño
-        </button>
-        <button
-          className={`auth-tab ${rol === 'taller' ? 'active' : ''}`}
-          onClick={() => setRol('taller')}
-        >
-          Taller
-        </button>
-      </div>
+      <form onSubmit={handleSubmit(procesarForm)}>
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input 
+            type="email" 
+            className={`form-input ${errors.email ? 'input-error' : ''}`}
+            placeholder="tu@email.com"
+            {...register('email')}
+          />
+          {errors.email && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.email.message}</span>}
+        </div>
 
-      <div className="alert alert-error" id="reg-error"></div>
-      <div className="alert alert-success" id="reg-success"></div>
-
-      <div className="form-group">
-        <label className="form-label">Username</label>
-        <input type="text" className="form-input" id="reg-username" placeholder="juanperez" />
-      </div>
-      <div className="form-group">
-        <label className="form-label">Email</label>
-        <input type="email" className="form-input" id="reg-email" placeholder="tu@email.com" />
-      </div>
-
-      {/* Campos dueño */}
-      {rol === 'duenio' && (
-        <div id="reg-duenio-fields">
-          <div className="form-row">
+        {/* Campos específicos para Dueño */}
+        {rol === 'duenio' && (
+          <div id="reg-duenio-fields">
             <div className="form-group">
               <label className="form-label">Nombre completo</label>
-              <input type="text" className="form-input" id="reg-nombre" placeholder="Juan García" />
+              <input 
+                type="text" 
+                className={`form-input ${errors.nombre ? 'input-error' : ''}`}
+                placeholder="Juan García"
+                {...register('nombre')}
+              />
+              {errors.nombre && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.nombre.message}</span>}
+            </div>
+          </div>
+        )}
+
+        {/* Campos específicos para Taller */}
+        {rol === 'taller' && (
+          <div id="reg-taller-fields">
+            <div className="form-group">
+              <label className="form-label">Nombre del taller</label>
+              <input 
+                type="text" 
+                className={`form-input ${errors.nombreTaller ? 'input-error' : ''}`}
+                placeholder="Taller García"
+                {...register('nombreTaller')}
+              />
+              {errors.nombreTaller && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.nombreTaller.message}</span>}
             </div>
             <div className="form-group">
-              <label className="form-label">Teléfono</label>
-              <input type="text" className="form-input" id="reg-telefono" placeholder="099123456" />
+              <label className="form-label">Teléfono (opcional)</label>
+              <input 
+                type="text" 
+                className={`form-input ${errors.telefono ? 'input-error' : ''}`}
+                placeholder="099123456"
+                {...register('telefono')}
+              />
+              {errors.telefono && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.telefono.message}</span>}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Campos taller */}
-      {rol === 'taller' && (
-        <div id="reg-taller-fields">
-          <div className="form-group">
-            <label className="form-label">Nombre del taller</label>
-            <input type="text" className="form-input" id="reg-nombretaller" placeholder="Taller García" />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Dirección</label>
-            <input type="text" className="form-input" id="reg-direccion" placeholder="Av. 18 de Julio 1234" />
-          </div>
-        </div>
-      )}
-
-      <div className="form-row">
         <div className="form-group">
           <label className="form-label">Contraseña</label>
-          <input type="password" className="form-input" id="reg-password" placeholder="••••••" />
+          <input 
+            type="password" 
+            className={`form-input ${errors.password ? 'input-error' : ''}`}
+            placeholder="••••••"
+            {...register('password')}
+          />
+          {errors.password && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.password.message}</span>}
         </div>
+
         <div className="form-group">
-          <label className="form-label">Confirmar</label>
-          <input type="password" className="form-input" id="reg-confirm" placeholder="••••••" />
+          <label className="form-label">Confirmar contraseña</label>
+          <input 
+            type="password" 
+            className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
+            placeholder="••••••"
+            {...register('confirmPassword')}
+          />
+          {errors.confirmPassword && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.confirmPassword.message}</span>}
         </div>
-      </div>
-      <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={onRegister}>
-        Crear cuenta
-      </button>
+
+        <button 
+          type="submit" 
+          className="btn btn-primary" 
+          style={{ width: '100%', justifyContent: 'center' }}
+          disabled={isLoading || !isDirty || !isValid}
+        >
+          {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
+        </button>
+      </form>
     </div>
   );
 }
