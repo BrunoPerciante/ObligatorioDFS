@@ -7,7 +7,7 @@ const ContainerPage = () => {
             <header className="main-header">
                 <div className="header-content">
                     <a href="index.html" className="app-logo">
-                        🌤️<span>Taller App</span>
+                        <span>AUTO TRACK App</span>
                     </a>
                 </div>
             </header>

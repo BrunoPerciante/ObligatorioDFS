@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { validarCredenciales } from "../../data/mockData";
 import { setUsuario, setRol, setLoading, setError } from "../../features/auth/auth.slice";
 
 export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }) {
@@ -24,22 +25,15 @@ export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }
       dispatch(setLoading(true));
       dispatch(setError(null));
 
-      // Aquí irá la llamada a tu API de login
-      // const response = await fetch('/api/v1/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ...data, rol })
-      // });
+      const validUser = validarCredenciales(data.email, data.password, rol);
+      if (!validUser) {
+        const errorMessage = 'Credenciales inválidas para el rol seleccionado.';
+        dispatch(setError(errorMessage));
+        toast.error(errorMessage);
+        return;
+      }
 
-      // const result = await response.json();
-      // dispatch(setUsuario({ usuario: result.usuario, token: result.token }));
-      // dispatch(setRol(rol));
-
-      console.log('Login datos:', { ...data, rol });
-      dispatch(setUsuario({ 
-        usuario: { email: data.email, rol }, 
-        token: 'token-simulado' 
-      }));
+      dispatch(setUsuario({ usuario: validUser, token: validUser.token }));
       dispatch(setRol(rol));
 
       toast.success("¡Bienvenido/a!");

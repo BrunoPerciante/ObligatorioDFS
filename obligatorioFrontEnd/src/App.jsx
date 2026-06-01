@@ -1,15 +1,12 @@
 import AuthPage from './pages/AuthPage'
 import DashboardDuenio from './pages/DashboardDuenio'
 import DashboardTaller from './pages/DashboardTaller'
-import ModalVehiculo from './components/modals/ModalVehiculo'
-import ModalMantenimiento from './components/modals/ModalMantenimiento'
-import ModalMecanico from './components/modals/ModalMecanico'
-import ModalCategoria from './components/modals/ModalCategoria'
+import ContainerPage from './pages/ContainerPage'
+import ProtectedRoute from './app/guards/ProtectedRoute'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from "./store/store"
 import './App.css'
-import ContainerPage from './pages/ContainerPage'
 
 function App() {
   return (
@@ -18,21 +15,22 @@ function App() {
         <Routes>
           <Route path="/" element={<ContainerPage />}>
             <Route index element={<AuthPage />} />
-            <Route path="/duenio" element={<DashboardDuenio />} />
-            <Route path="/taller" element={<DashboardTaller />} />
+
+            {/* Solo dueños autenticados */}
+            <Route element={<ProtectedRoute rolRequerido="duenio" />}>
+              <Route path="/duenio" element={<DashboardDuenio />} />
+            </Route>
+
+            {/* Solo talleres autenticados */}
+            <Route element={<ProtectedRoute rolRequerido="taller" />}>
+              <Route path="/taller" element={<DashboardTaller />} />
+            </Route>
+
           </Route>
         </Routes>
-
-        {/* MODALES 
-        <ModalVehiculo />
-        <ModalMantenimiento />
-        <ModalMecanico />
-        <ModalCategoria />
-        */}
       </BrowserRouter>
     </Provider>
   )
 }
 
 export default App
-
