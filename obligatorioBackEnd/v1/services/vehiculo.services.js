@@ -1,8 +1,11 @@
 import Usuario from '../models/usuario.model.js';
 import Vehiculo from '../models/vehiculos.model.js';
 
-export const obtenerVehiculosService = async () => {
-  return Vehiculo.find().populate('duenio', 'username nombre');
+export const obtenerVehiculosService = async (duenioId) => {
+  if (!duenioId) {
+    return Vehiculo.find().populate('duenio', 'username nombre');
+  }
+  return Vehiculo.find({ duenio: duenioId }).populate('duenio', 'username nombre');
 };
 
 export const obtenerVehiculoPorIdService = async (id) => {

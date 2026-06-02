@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from "./store/store"
 import './App.css'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             </Route>
 
           </Route>
+          <Route path="*" element= {<NotFoundPage/>}></Route>
         </Routes>
       </BrowserRouter>
     </Provider>

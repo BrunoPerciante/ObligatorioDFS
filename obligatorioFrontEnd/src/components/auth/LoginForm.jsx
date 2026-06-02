@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { validarCredenciales } from "../../data/mockData";
+import api from "../../api/api";
 import { setUsuario, setRol, setLoading, setError } from "../../features/auth/auth.slice";
+
 
 export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }) {
   const navigate = useNavigate();
@@ -25,24 +26,22 @@ export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }
       dispatch(setLoading(true));
       dispatch(setError(null));
 
-      const validUser = validarCredenciales(data.email, data.password, rol);
-      if (!validUser) {
-        const errorMessage = 'Credenciales inválidas para el rol seleccionado.';
-        dispatch(setError(errorMessage));
-        toast.error(errorMessage);
-        return;
-      }
+      const payload = { email: data.email, password: data.password };
+      const res = await api.post(`/auth/login/${rol}`, payload, { skipAuth: true });
+      const { usuario, token } = res.data;
 
-      dispatch(setUsuario({ usuario: validUser, token: validUser.token }));
+      if (token) localStorage.setItem('token', token);
+      dispatch(setUsuario({ usuario, token }));
       dispatch(setRol(rol));
 
-      toast.success("¡Bienvenido/a!");
+      toast.success('¡Bienvenido/a!');
       reset();
-      navigate(rol === 'duenio' ? "/duenio" : "/taller");
+      navigate(rol === 'duenio' ? '/duenio' : '/taller');
     } catch (error) {
       console.error('Error en login:', error);
-      dispatch(setError(error.message || "Error al iniciar sesión"));
-      toast.error(error.message || "Error al iniciar sesión");
+      const message = error.response?.data?.message || error.message || "Error al iniciar sesión";
+      dispatch(setError(message));
+      toast.error(message);
     } finally {
       dispatch(setLoading(false));
     }
@@ -53,8 +52,8 @@ export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }
       <form onSubmit={handleSubmit(procesarForm)}>
         <div className="form-group">
           <label className="form-label">Email</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             className={`form-input ${errors.email ? 'input-error' : ''}`}
             placeholder="tu@email.com"
             {...register('email')}
@@ -64,8 +63,8 @@ export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }
 
         <div className="form-group">
           <label className="form-label">Contraseña</label>
-          <input 
-            type="password" 
+          <input
+            type="password"
             className={`form-input ${errors.password ? 'input-error' : ''}`}
             placeholder="••••••"
             {...register('password')}
@@ -73,9 +72,9 @@ export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }
           {errors.password && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.password.message}</span>}
         </div>
 
-        <button 
-          type="submit" 
-          className="btn btn-primary" 
+        <button
+          type="submit"
+          className="btn btn-primary"
           style={{ width: '100%', justifyContent: 'center' }}
           disabled={isLoading || !isDirty || !isValid}
         >

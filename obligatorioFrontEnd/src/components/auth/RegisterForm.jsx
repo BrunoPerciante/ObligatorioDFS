@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import api from "../../api/api";
 import { setUsuario, setRol, setLoading, setError } from "../../features/auth/auth.slice";
 
 export default function RegisterForm({ activo = false, rol = 'duenio', registerSchema }) {
@@ -10,20 +11,20 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
   const dispatch = useDispatch();
   const { isLoading } = useSelector(state => state.auth);
 
-  const defaultValues = rol === 'duenio' 
+  const defaultValues = rol === 'duenio'
     ? {
-        email: '',
-        password: '',
-        confirmPassword: '',
-        nombre: ''
-      }
+      email: '',
+      password: '',
+      confirmPassword: '',
+      nombre: ''
+    }
     : {
-        email: '',
-        password: '',
-        confirmPassword: '',
-        nombreTaller: '',
-        telefono: ''
-      };
+      email: '',
+      password: '',
+      confirmPassword: '',
+      nombreTaller: '',
+      telefono: ''
+    };
 
   const { register, handleSubmit, formState: { errors, isDirty, isValid }, reset } = useForm({
     resolver: joiResolver(registerSchema),
@@ -36,35 +37,25 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
       dispatch(setLoading(true));
       dispatch(setError(null));
 
-      // Aquí irá la llamada a tu API de registro
-      // const response = await fetch('/api/v1/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ...data, rol })
-      // });
+      const payload = { ...data };
+      const response = await api.post(`/auth/registro/${rol}`, payload, { skipAuth: true });
+      const { usuario, token } = response.data;
 
-      // const result = await response.json();
-      // dispatch(setUsuario({ usuario: result.usuario, token: result.token }));
-      // dispatch(setRol(rol));
+      if (token) {
+        localStorage.setItem('token', token);
+      }
 
-      console.log('Registro datos:', { ...data, rol });
-      dispatch(setUsuario({ 
-        usuario: { 
-          email: data.email, 
-          nombre: rol === 'duenio' ? data.nombre : data.nombreTaller,
-          rol 
-        }, 
-        token: 'token-simulado' 
-      }));
+      dispatch(setUsuario({ usuario, token }));
       dispatch(setRol(rol));
 
       toast.success("¡Cuenta creada exitosamente!");
       reset();
-      navigate(rol === 'duenio' ? "/dashboard-duenio" : "/dashboard-taller");
+      navigate(rol === 'duenio' ? "/duenio" : "/taller");
     } catch (error) {
       console.error('Error en registro:', error);
-      dispatch(setError(error.message || "Error al crear la cuenta"));
-      toast.error(error.message || "Error al crear la cuenta");
+      const message = error.response?.data?.message || error.message || "Error al crear la cuenta";
+      dispatch(setError(message));
+      toast.error(message);
     } finally {
       dispatch(setLoading(false));
     }
@@ -75,8 +66,8 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
       <form onSubmit={handleSubmit(procesarForm)}>
         <div className="form-group">
           <label className="form-label">Email</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             className={`form-input ${errors.email ? 'input-error' : ''}`}
             placeholder="tu@email.com"
             {...register('email')}
@@ -89,8 +80,8 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
           <div id="reg-duenio-fields">
             <div className="form-group">
               <label className="form-label">Nombre completo</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-input ${errors.nombre ? 'input-error' : ''}`}
                 placeholder="Juan García"
                 {...register('nombre')}
@@ -105,8 +96,8 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
           <div id="reg-taller-fields">
             <div className="form-group">
               <label className="form-label">Nombre del taller</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-input ${errors.nombreTaller ? 'input-error' : ''}`}
                 placeholder="Taller García"
                 {...register('nombreTaller')}
@@ -115,8 +106,8 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
             </div>
             <div className="form-group">
               <label className="form-label">Teléfono (opcional)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-input ${errors.telefono ? 'input-error' : ''}`}
                 placeholder="099123456"
                 {...register('telefono')}
@@ -128,8 +119,8 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
 
         <div className="form-group">
           <label className="form-label">Contraseña</label>
-          <input 
-            type="password" 
+          <input
+            type="password"
             className={`form-input ${errors.password ? 'input-error' : ''}`}
             placeholder="••••••"
             {...register('password')}
@@ -139,8 +130,8 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
 
         <div className="form-group">
           <label className="form-label">Confirmar contraseña</label>
-          <input 
-            type="password" 
+          <input
+            type="password"
             className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
             placeholder="••••••"
             {...register('confirmPassword')}
@@ -148,9 +139,9 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
           {errors.confirmPassword && <span className="error" style={{ color: 'red', fontSize: '12px' }}>{errors.confirmPassword.message}</span>}
         </div>
 
-        <button 
-          type="submit" 
-          className="btn btn-primary" 
+        <button
+          type="submit"
+          className="btn btn-primary"
           style={{ width: '100%', justifyContent: 'center' }}
           disabled={isLoading || !isDirty || !isValid}
         >

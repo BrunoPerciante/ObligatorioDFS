@@ -1,11 +1,7 @@
 import Joi from 'joi';
 
 const baseRegister = Joi.object({
-  username: Joi.string().trim().min(3).max(30).required().messages({
-    'string.empty': 'El nombre de usuario es obligatorio',
-    'string.min': 'El nombre de usuario debe tener al menos {#limit} caracteres',
-    'string.max': 'El nombre de usuario no puede tener más de {#limit} caracteres',
-  }),
+  username: Joi.string().trim().min(3).max(30).optional(),
   email: Joi.string().trim().email().required().messages({
     'string.empty': 'El email es obligatorio',
     'string.email': 'El email debe ser válido',
@@ -24,18 +20,14 @@ export const registerDuenioSchema = baseRegister.keys({
   nombre: Joi.string().trim().required().messages({
     'string.empty': 'El nombre es obligatorio',
   }),
-  telefono: Joi.string().trim().required().messages({
-    'string.empty': 'El teléfono es obligatorio',
-  }),
+  telefono: Joi.string().trim().optional(),
 });
 
 export const registerTallerSchema = baseRegister.keys({
   nombreTaller: Joi.string().trim().required().messages({
     'string.empty': 'El nombre del taller es obligatorio',
   }),
-  direccion: Joi.string().trim().required().messages({
-    'string.empty': 'La dirección es obligatoria',
-  }),
+  telefono: Joi.string().trim().optional(),
 });
 
 export const loginSchema = Joi.object({

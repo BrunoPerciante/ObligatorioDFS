@@ -8,7 +8,8 @@ import {
 
 export const obtenerVehiculos = async (req, res) => {
   try {
-    const vehiculos = await obtenerVehiculosService();
+    const duenioId = req.usuario?.id;
+    const vehiculos = await obtenerVehiculosService(duenioId);
     return res.json(vehiculos);
   } catch (error) {
     console.error('Error al obtener vehículos:', error);

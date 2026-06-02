@@ -8,6 +8,21 @@ export const registrarUsuarioService = async (usuarioData) => {
   const emailExists = await Usuario.findOne({ email: data.email });
   if (emailExists) return { message: "El email ya está registrado" };
 
+  if (!data.username) {
+    const baseUsername = data.nombre
+      ? data.nombre.toLowerCase().replace(/\s+/g, '')
+      : data.nombreTaller
+      ? data.nombreTaller.toLowerCase().replace(/\s+/g, '')
+      : data.email.split('@')[0];
+
+    let generatedUsername = baseUsername;
+    let counter = 1;
+    while (await Usuario.findOne({ username: generatedUsername })) {
+      generatedUsername = `${baseUsername}${counter++}`;
+    }
+    data.username = generatedUsername;
+  }
+
   const usernameExists = await Usuario.findOne({ username: data.username });
   if (usernameExists) return { message: "El nombre de usuario ya existe" };
 
