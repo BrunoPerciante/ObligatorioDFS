@@ -13,7 +13,7 @@ export const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        setUsuario: (state, action) => {
+        setUsuario: (state, action) => {//action que me llega desde el formulario por el dispatchdel mismo
             state.usuario = action.payload.usuario;
             state.token = action.payload.token;
             state.isAuthenticated = true;

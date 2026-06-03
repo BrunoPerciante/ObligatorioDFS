@@ -34,7 +34,7 @@ export default function RegisterForm({ activo = false, rol = 'duenio', registerS
 
   const procesarForm = async (data) => {
     try {
-      dispatch(setLoading(true));
+      dispatch(setLoading(true));  //en authslice
       dispatch(setError(null));
 
       const payload = { ...data };

@@ -1,15 +1,18 @@
-export default function Resumen() {
+export default function Resumen({ usuario, vehiculos = [] }) {
+  const vehiculosCount = vehiculos.length;
+  const nombreUsuario = usuario?.username || usuario?.email || 'Usuario';
+
   return (
     <div id="duenio-home" className="dash-section active">
       <div className="section-header">
         <div>
-          <h2 className="section-title">Bienvenido <span id="duenio-username"></span></h2>
+          <h2 className="section-title">Bienvenido {nombreUsuario}</h2>
           <p style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px' }}>Panel de control de tu flota</p>
         </div>
       </div>
       <div className="stats-row">
         <div className="stat-box">
-          <div className="stat-number" id="stat-vehiculos">0</div>
+          <div className="stat-number" id="stat-vehiculos">{vehiculosCount}</div>
           <div className="stat-label">Vehículos</div>
         </div>
         <div className="stat-box" style={{ '--accent': '#f39c12' }}>

@@ -391,8 +391,8 @@
     .main-content { padding: 32px 36px; overflow-y: auto; }
 
     /* ─── SECTION (dentro de dashboard) ─── */
-    .dash-section { display: none; }
-    .dash-section.active { display: block; animation: fadeIn .25s ease; }
+    .dash-section { display: block; }
+    .dash-section.active { animation: fadeIn .25s ease; }
 
     /* ─── HERO (login page) ─── */
     #page-auth {
