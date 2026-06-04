@@ -1,10 +1,15 @@
-export default function ResumenTaller() {
+import { useState } from 'react';
+import ModalCategoria from '../../modals/ModalCategoria';
+
+export default function ResumenTaller({ usuario }) {
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false);
+
   return (
     <div id="taller-home" className="dash-section active">
       <div className="section-header">
         <div>
           <h2 className="section-title">Panel del taller</h2>
-          <p style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px' }} id="taller-nombre-sub">Cargando...</p>
+          <p style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px' }}>{usuario?.nombreTaller || usuario?.username}</p>
         </div>
       </div>
       <div className="stats-row">
@@ -26,11 +31,18 @@ export default function ResumenTaller() {
           <div className="card-title">Acciones rápidas</div>
         </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <button className="btn btn-primary" onClick="switchSidebar('taller-mantenimientos', null, 'taller'); openModal('modal-mantenimiento')">+ Nuevo mantenimiento</button>
-          <button className="btn btn-secondary" onClick="switchSidebar('taller-mecanicos', null, 'taller'); openModal('modal-mecanico')">+ Agregar mecánico</button>
-          <button className="btn btn-secondary" onClick="switchSidebar('taller-categorias', null, 'taller')">Gestionar categorías</button>
+          <button className="btn btn-primary">+ Nuevo mantenimiento</button>
+          <button className="btn btn-secondary">+ Agregar mecánico</button>
+          <button className="btn btn-secondary" onClick={() => setShowCategoriaModal(true)}>
+            🏷️ Gestionar categorías
+          </button>
         </div>
       </div>
+
+      <ModalCategoria 
+        isOpen={showCategoriaModal} 
+        onClose={() => setShowCategoriaModal(false)}
+      />
     </div>
   );
 }

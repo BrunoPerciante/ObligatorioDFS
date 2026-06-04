@@ -13,6 +13,9 @@ export default function DashboardDuenio() {
   const [vehiculos, setVehiculos] = useState([]);
   const [vehiculosLoading, setVehiculosLoading] = useState(false);
   const [vehiculosError, setVehiculosError] = useState(null);
+  const [mantenimientos, setMantenimientos] = useState([]);
+  const [mantenimientosLoading, setMantenimientosLoading] = useState(false);
+  const [mantenimientosError, setMantenimientosError] = useState(null);
   const [createError, setCreateError] = useState(null);
   const [createSuccess, setCreateSuccess] = useState(null);
   const navigate = useNavigate();
@@ -36,6 +39,27 @@ export default function DashboardDuenio() {
 
     if (seccion === 'vehiculos' || seccion === 'resumen') {
       cargarVehiculos();
+    }
+  }, [seccion]);
+
+  useEffect(() => {
+    const cargarMantenimientos = async () => {
+      setMantenimientosLoading(true);
+      setMantenimientosError(null);
+
+      try {
+        const response = await api.get('/mantenimientos?page=1&limit=100');
+        setMantenimientos(response.data?.mantenimientos || []);
+      } catch (error) {
+        setMantenimientosError('No se pudieron cargar los mantenimientos.');
+        console.error(error);
+      } finally {
+        setMantenimientosLoading(false);
+      }
+    };
+
+    if (seccion === 'mantenimientos') {
+      cargarMantenimientos();
     }
   }, [seccion]);
 
@@ -115,7 +139,15 @@ export default function DashboardDuenio() {
               createSuccess={createSuccess}
             />
           )}
-          {seccion === 'mantenimientos' && <Mantenimientos />}
+          {seccion === 'mantenimientos' && (
+            <Mantenimientos 
+              vehiculos={vehiculos}
+              mantenimientos={mantenimientos}
+              loading={mantenimientosLoading}
+              error={mantenimientosError}
+
+            />
+          )}
           {seccion === 'marcas' && <ExplorarMarcas />}
         </div>
 

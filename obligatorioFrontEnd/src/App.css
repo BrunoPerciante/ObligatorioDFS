@@ -525,6 +525,37 @@
       font-size: 13px;
     }
 
+    .auth-role-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .auth-role-tab {
+      flex: 0 1 auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--trans);
+      text-transform: capitalize;
+    }
+    .auth-role-tab:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(230, 51, 41, 0.08);
+    }
+    .auth-role-tab.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
     /* ─── VEHICULO INFO ─── */
     .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
     .info-card {

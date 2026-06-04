@@ -5,8 +5,7 @@ import { getLoginSchema, getRegisterSchema } from '../validators/auth.validators
 
 export default function AuthPage() {
   const [pestanaActiva, setPestanaActiva] = useState('login'); // 'login' | 'registro'
-  const [rolLogin, setRolLogin] = useState('duenio'); // 'duenio' | 'taller'
-  const [rolRegistro, setRolRegistro] = useState('duenio');
+  const [rol, setRol] = useState('duenio'); // 'duenio' | 'taller'
 
   function cambiarPestana(tab) {
     setPestanaActiva(tab);
@@ -17,8 +16,8 @@ export default function AuthPage() {
   }
 
   // Obtener los schemas corretos basándose en el rol y la pestaña
-  const loginSchemaActual = getLoginSchema(rolLogin);
-  const registerSchemaActual = getRegisterSchema(rolRegistro);
+  const loginSchemaActual = getLoginSchema(rol);
+  const registerSchemaActual = getRegisterSchema(rol);
 
   return (
     <div id="page-auth" className="page active">
@@ -51,59 +50,38 @@ export default function AuthPage() {
           </button>
         </div>
 
-        {/* LOGIN */}
-        <div className={`auth-role-tabs ${pestanaActiva === 'login' ? 'active' : ''}`} style={{ marginBottom: '20px' }}>
+        {/* SELECTOR DE ROL - UNO SOLO PARA AMBOS FORMULARIOS */}
+        <div className="auth-role-tabs" style={{ marginBottom: '20px' }}>
           <button
-            className={`auth-role-tab ${rolLogin === 'duenio' ? 'active' : ''}`}
-            onClick={() => setRolLogin('duenio')}
+            className={`auth-role-tab ${rol === 'duenio' ? 'active' : ''}`}
+            onClick={() => setRol('duenio')}
           >
             Soy Dueño
           </button>
           <button
-            className={`auth-role-tab ${rolLogin === 'taller' ? 'active' : ''}`}
-            onClick={() => setRolLogin('taller')}
+            className={`auth-role-tab ${rol === 'taller' ? 'active' : ''}`}
+            onClick={() => setRol('taller')}
           >
             Soy Taller
           </button>
         </div>
 
-        {pestanaActiva === 'login' && (
-          <div id="login-role-badge" className="tag tag-plus" style={{ marginBottom: '16px', fontSize: '10px' }}>
-            ROL: {rolLogin === 'duenio' ? 'DUEÑO' : 'TALLER'}
-          </div>
-        )}
+        {/* BADGE DEL ROL ACTUAL */}
+        <div className="tag tag-plus" style={{ marginBottom: '16px', fontSize: '10px' }}>
+          ROL: {rol === 'duenio' ? 'DUEÑO' : 'TALLER'}
+        </div>
 
+        {/* LOGIN */}
         <LoginForm
           activo={pestanaActiva === 'login'}
-          rol={rolLogin}
+          rol={rol}
           loginSchema={loginSchemaActual}
         />
 
         {/* REGISTRO */}
-        <div className={`auth-role-tabs ${pestanaActiva === 'registro' ? 'active' : ''}`} style={{ marginBottom: '20px' }}>
-          <button
-            className={`auth-role-tab ${rolRegistro === 'duenio' ? 'active' : ''}`}
-            onClick={() => setRolRegistro('duenio')}
-          >
-            Soy Dueño
-          </button>
-          <button
-            className={`auth-role-tab ${rolRegistro === 'taller' ? 'active' : ''}`}
-            onClick={() => setRolRegistro('taller')}
-          >
-            Soy Taller
-          </button>
-        </div>
-
-        {pestanaActiva === 'registro' && (
-          <div id="register-role-badge" className="tag tag-plus" style={{ marginBottom: '16px', fontSize: '10px' }}>
-            ROL: {rolRegistro === 'duenio' ? 'DUEÑO' : 'TALLER'}
-          </div>
-        )}
-
         <RegisterForm
           activo={pestanaActiva === 'registro'}
-          rol={rolRegistro}
+          rol={rol}
           registerSchema={registerSchemaActual}
         />
 
