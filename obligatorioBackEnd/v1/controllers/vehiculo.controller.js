@@ -8,8 +8,8 @@ import {
 
 export const obtenerVehiculos = async (req, res) => {
   try {
-    const duenioId = req.usuario?.id;
-    const vehiculos = await obtenerVehiculosService(duenioId);
+    // Devuelve todos los vehículos (uso administrativo/publico)
+    const vehiculos = await obtenerVehiculosService();
     return res.json(vehiculos);
   } catch (error) {
     console.error('Error al obtener vehículos:', error);

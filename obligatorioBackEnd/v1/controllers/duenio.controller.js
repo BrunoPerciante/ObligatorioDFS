@@ -4,6 +4,7 @@ import {
   modificarDuenioService,
   eliminarDuenioService
 } from '../services/duenio.services.js';
+import { obtenerVehiculosPorDuenio } from '../services/vehiculo.services.js';
 
 export const obtenerDuenios = async (req, res) => {
   try {
@@ -41,5 +42,17 @@ export const eliminarDuenio = async (req, res) => {
     res.json({ message: 'Dueño eliminado' });
   } catch (error) {
     res.status(500).json({ message: 'Error al eliminar dueño', error: error.message });
+  }
+};
+
+export const obtenerMisVehiculos = async (req, res) => {
+  try {
+    const duenioId = req.usuario?.id;
+    if (!duenioId) return res.status(401).json({ message: 'Usuario no autenticado' });
+
+    const vehiculos = await obtenerVehiculosPorDuenio(duenioId);
+    res.json(vehiculos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener mis vehículos', error: error.message });
   }
 };

@@ -4,6 +4,7 @@ import {
   obtenerTallerPorId,
   modificarTaller,
   eliminarTaller,
+  obtenerMisVehiculos,
 } from '../controllers/taller.controller.js';
 import { rolAuthMiddleware } from '../middlewares/rolAuth.middleware.js';
 import { validateBodyMiddleware } from '../middlewares/validateBody.middleware.js';
@@ -13,6 +14,7 @@ import { authenticateMiddleware } from '../middlewares/authenticate.middleware.j
 const router = express.Router({ mergeParams: true });
 
 router.get('/', authenticateMiddleware, obtenerTalleres);
+router.get('/misVehiculos', authenticateMiddleware, rolAuthMiddleware(['taller']), obtenerMisVehiculos);
 router.get('/:id', authenticateMiddleware, obtenerTallerPorId);
 router.put('/:id', authenticateMiddleware, validateBodyMiddleware(updateTallerSchema), modificarTaller);
 router.delete('/:id', authenticateMiddleware, eliminarTaller);

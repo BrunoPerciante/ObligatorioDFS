@@ -1,11 +1,20 @@
 import Usuario from '../models/usuario.model.js';
 import Vehiculo from '../models/vehiculos.model.js';
+import Mantenimiento from '../models/mantenimientos.model.js';
 
-export const obtenerVehiculosService = async (duenioId) => {
-  if (!duenioId) {
-    return Vehiculo.find().populate('duenio', 'username nombre');
-  }
+export const obtenerVehiculosService = async () => {
+  return Vehiculo.find().populate('duenio', 'username nombre');
+};
+
+export const obtenerVehiculosPorDuenio = async (duenioId) => {
   return Vehiculo.find({ duenio: duenioId }).populate('duenio', 'username nombre');
+};
+
+export const obtenerVehiculosPorTaller = async (tallerId) => {
+  // Buscar mantenimientos realizados por el taller y obtener vehículos asociados
+  const vehiculoIds = await Mantenimiento.find({ taller: tallerId }).distinct('vehiculo');
+  if (!vehiculoIds || vehiculoIds.length === 0) return [];
+  return Vehiculo.find({ _id: { $in: vehiculoIds } }).populate('duenio', 'username nombre');
 };
 
 export const obtenerVehiculoPorIdService = async (id) => {
