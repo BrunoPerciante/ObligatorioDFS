@@ -1,17 +1,47 @@
-export default function ModalCategoria() {
+import { useState } from 'react';
+
+export default function ModalCategoria({ abierto, alCerrar }) {
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [error, setError] = useState('');
+  const [exito, setExito] = useState('');
+
+  if (!abierto) return null;
+
+  const manejarEnvio = () => {
+    if (!nombre) {
+      setError('Seleccioná una categoría.');
+      setExito('');
+      return;
+    }
+
+    setError('');
+    setExito('Categoría preparada para creación.');
+  };
+
+  const manejarClickOverlay = (event) => {
+    if (event.target === event.currentTarget) {
+      alCerrar?.();
+    }
+  };
+
   return (
-    <div id="modal-categoria" className="modal-overlay">
-      <div className="modal">
+    <div id="modal-categoria" className={`modal-overlay ${abierto ? 'open' : ''}`} onClick={manejarClickOverlay}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3 style={{ fontFamily: 'var(--font-head)', fontSize: '1.4rem', letterSpacing: '0.04em' }}>Nueva Categoría</h3>
-          <button className="modal-close" onClick="closeModal('modal-categoria')">✕</button>
+          <button className="modal-close" type="button" onClick={alCerrar}>✕</button>
         </div>
-        <div className="alert alert-error" id="cat-error"></div>
-        <div className="alert alert-success" id="cat-success"></div>
+        {error && <div className="alert alert-error">{error}</div>}
+        {exito && <div className="alert alert-success">{exito}</div>}
 
         <div className="form-group">
           <label className="form-label">Nombre</label>
-          <select className="form-select" id="cat-nombre">
+          <select
+            className="form-select"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          >
             <option value="">Seleccioná una categoría</option>
             <option value="mecanica">Mecánica</option>
             <option value="electricidad">Electricidad</option>
@@ -21,9 +51,19 @@ export default function ModalCategoria() {
         </div>
         <div className="form-group">
           <label className="form-label">Descripción</label>
-          <textarea className="form-textarea" id="cat-descripcion" placeholder="Describí qué servicios abarca esta categoría..."></textarea>
+          <textarea
+            className="form-textarea"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            placeholder="Describí qué servicios abarca esta categoría..."
+          />
         </div>
-        <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }} onClick="crearCategoria()">
+        <button
+          type="button"
+          className="btn btn-primary"
+          style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+          onClick={manejarEnvio}
+        >
           Crear categoría
         </button>
       </div>

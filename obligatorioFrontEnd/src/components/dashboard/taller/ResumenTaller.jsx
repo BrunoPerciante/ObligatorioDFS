@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import ModalCategoria from '../../modals/ModalCategoria';
 
-export default function ResumenTaller({ usuario }) {
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false);
+export default function ResumenTaller({ usuario, alCrearMantenimiento, alAgregarMecanico }) {
+  const [mostrarModalCategoria, setMostrarModalCategoria] = useState(false);
 
   return (
     <div id="taller-home" className="dash-section active">
@@ -31,17 +31,17 @@ export default function ResumenTaller({ usuario }) {
           <div className="card-title">Acciones rápidas</div>
         </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <button className="btn btn-primary">+ Nuevo mantenimiento</button>
-          <button className="btn btn-secondary">+ Agregar mecánico</button>
-          <button className="btn btn-secondary" onClick={() => setShowCategoriaModal(true)}>
+          <button className="btn btn-primary" type="button" onClick={alCrearMantenimiento}>+ Nuevo mantenimiento</button>
+          <button className="btn btn-secondary" type="button" onClick={alAgregarMecanico}>+ Agregar mecánico</button>
+          <button className="btn btn-secondary" type="button" onClick={() => setMostrarModalCategoria(true)}>
             🏷️ Gestionar categorías
           </button>
         </div>
       </div>
 
       <ModalCategoria 
-        isOpen={showCategoriaModal} 
-        onClose={() => setShowCategoriaModal(false)}
+        abierto={mostrarModalCategoria} 
+        alCerrar={() => setMostrarModalCategoria(false)}
       />
     </div>
   );
