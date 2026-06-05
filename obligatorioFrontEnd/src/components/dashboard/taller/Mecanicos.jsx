@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from "../../../api/api.js";
-export default function Mecanicos({ alAgregarMecanico, recargar }) {
+export default function Mecanicos({ alAgregarMecanico, recargar, usuario }) {
   const [mecanicos, setMecanicos] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState('');
@@ -14,7 +14,12 @@ export default function Mecanicos({ alAgregarMecanico, recargar }) {
     setCargando(true);
     try {
       const response = await api.get('/mecanicos');
-      setMecanicos(response.data || []);
+      const todos = response.data || [];
+      const misTallerId = usuario?._id;
+      const soloMisTaller = todos.filter(m =>
+        m.taller?._id === misTallerId || m.taller === misTallerId
+      );
+      setMecanicos(soloMisTaller);
     } catch (err) {
       console.error('Error cargando mecánicos:', err);
       setError('Error al cargar los mecánicos.');

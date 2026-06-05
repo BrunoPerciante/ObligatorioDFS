@@ -8,76 +8,56 @@ export default function Vehiculos({ usuario }) {
   const [busqueda, setBusqueda] = useState('');
   const [filtroMarca, setFiltroMarca] = useState('todos');
 
-  // Cargar vehículos del taller
   useEffect(() => {
     const cargarVehiculos = async () => {
       setLocalLoading(true);
       setLocalError(null);
-
       try {
-        // Obtener todos los vehículos
-        const response = await api.get('/vehiculos?page=1&limit=100');
-        const todos = response.data?.data?.vehiculos || response.data?.data || [];
-        
-        // Filtrar solo vehículos que tienen mantenimientos de este taller
-        const vehiculosDelTaller = todos.filter(v => {
-          // Si el vehículo tiene mantenimientos, verifica que alguno sea de este taller
-          if (v.mantenimientos && Array.isArray(v.mantenimientos)) {
-            return v.mantenimientos.some(m => m.taller === usuario._id);
-          }
-          return false;
-        });
-        
-        setVehiculosLocal(vehiculosDelTaller);
+        const response = await api.get('/vehiculos');
+        setVehiculosLocal(response.data || []);
       } catch (err) {
-        setLocalError('No se pudieron cargar los vehículos del taller');
+        setLocalError('No se pudieron cargar los vehículos');
         console.error('Error cargando vehículos:', err);
       } finally {
         setLocalLoading(false);
       }
     };
 
-    if (usuario?._id) {
-      cargarVehiculos();
-    }
-  }, [usuario?._id]);
+    cargarVehiculos();
+  }, []);
 
-  // Filtrar por búsqueda y marca
   const vehiculosFiltrados = vehiculosLocal.filter(v => {
-    const matchBusqueda = !busqueda || 
+    const matchBusqueda = !busqueda ||
       v.padron?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      v.matricula?.toLowerCase().includes(busqueda.toLowerCase()) ||
       v.marca?.toLowerCase().includes(busqueda.toLowerCase()) ||
       v.modelo?.toLowerCase().includes(busqueda.toLowerCase());
-    
+
     const matchMarca = filtroMarca === 'todos' || v.marca?.toLowerCase() === filtroMarca.toLowerCase();
-    
+
     return matchBusqueda && matchMarca;
   });
 
-  // Obtener marcas únicas para el select
   const marcasUnicas = [...new Set(vehiculosLocal.map(v => v.marca))].sort();
-
-  const formatFecha = (fecha) => new Date(fecha).toLocaleDateString('es-UY');
 
   return (
     <div className="dash-section">
       <div className="section-header">
         <h2 className="section-title">
-          Vehículos en el taller <span style={{ fontSize: '0.6em', color: 'var(--muted)' }}>({vehiculosFiltrados.length})</span>
+          Vehículos <span style={{ fontSize: '0.6em', color: 'var(--muted)' }}>({vehiculosFiltrados.length})</span>
         </h2>
-        <p style={{ fontSize: '12px', color: 'var(--muted)' }}>Vehículos que tienen mantenimientos registrados</p>
+        <p style={{ fontSize: '12px', color: 'var(--muted)' }}>Todos los vehículos registrados en el sistema</p>
       </div>
 
-      {/* BUSCADOR */}
       <div className="search-bar" style={{ marginBottom: '16px' }}>
-        <input 
+        <input
           type="text"
           className="search-input"
-          placeholder="Buscar por patente, marca o modelo..."
+          placeholder="Buscar por padrón, matrícula, marca o modelo..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
-        <select 
+        <select
           className="form-select"
           value={filtroMarca}
           onChange={(e) => setFiltroMarca(e.target.value)}
@@ -85,14 +65,11 @@ export default function Vehiculos({ usuario }) {
         >
           <option value="todos">Todas las marcas</option>
           {marcasUnicas.map(marca => (
-            <option key={marca} value={marca}>
-              {marca}
-            </option>
+            <option key={marca} value={marca}>{marca}</option>
           ))}
         </select>
       </div>
 
-      {/* INDICADORES DE ESTADO */}
       {localLoading && (
         <div className="empty-state" style={{ padding: '30px' }}>
           <div className="spinner"></div>
@@ -101,46 +78,39 @@ export default function Vehiculos({ usuario }) {
       )}
 
       {localError && (
-        <div className="alert alert-error" style={{ marginBottom: '16px' }}>
+        <div className="alert alert-error show" style={{ marginBottom: '16px' }}>
           {localError}
         </div>
       )}
 
-      {/* TABLA DE VEHÍCULOS */}
       {!localLoading && !localError && vehiculosFiltrados.length > 0 && (
         <div className="card">
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Patente</th>
+                  <th>Padrón</th>
+                  <th>Matrícula</th>
                   <th>Marca</th>
                   <th>Modelo</th>
                   <th>Año</th>
+                  <th>Kilometraje</th>
                   <th>Dueño</th>
-                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {vehiculosFiltrados.map((v) => (
                   <tr key={v._id}>
                     <td><strong>{v.padron}</strong></td>
+                    <td className="td-mono">{v.matricula}</td>
                     <td>{v.marca}</td>
                     <td>{v.modelo}</td>
-                    <td className="td-mono">{v.año || '-'}</td>
+                    <td className="td-mono">{v.anio || '-'}</td>
+                    <td className="td-mono">{v.kilometraje?.toLocaleString() || '-'}</td>
                     <td>
                       <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
-                        {v.duenio?.username || 'Sin dueño'}
+                        {v.duenio?.username || v.duenio?.nombre || 'Sin dueño'}
                       </span>
-                    </td>
-                    <td style={{ display: 'flex', gap: '6px' }}>
-                      <button 
-                        className="btn btn-sm btn-secondary"
-                        title="Ver detalles"
-                        onClick={() => alert(`Vehículo: ${v.marca} ${v.modelo}\nPatente: ${v.padron}\nDueño: ${v.duenio?.username}`)}
-                      >
-                        👁️
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -150,13 +120,12 @@ export default function Vehiculos({ usuario }) {
         </div>
       )}
 
-      {/* ESTADO VACÍO */}
       {!localLoading && !localError && vehiculosFiltrados.length === 0 && (
         <div className="empty-state" style={{ padding: '30px' }}>
           <div className="empty-icon">🚗</div>
           <div className="empty-text">
-            {vehiculosLocal.length === 0 
-              ? 'No hay vehículos asociados a este taller aún' 
+            {vehiculosLocal.length === 0
+              ? 'No hay vehículos registrados en el sistema'
               : 'No hay resultados para tu búsqueda'}
           </div>
         </div>

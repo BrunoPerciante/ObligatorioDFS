@@ -3,6 +3,7 @@ import api from '../../api/api.js';
 
 export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCreado }) {
   const [vehiculos, setVehiculos] = useState([]);
+  const [busquedaVehiculo, setBusquedaVehiculo] = useState('');
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState('');
   const [fecha, setFecha] = useState('');
   const [categoria, setCategoria] = useState('');
@@ -17,28 +18,28 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
   const idTallerDelUsuario = usuario?._id || '';
 
   useEffect(() => {
-    if (abierto && idTallerDelUsuario) {
+    if (abierto) {
       cargarVehiculos();
     }
-  }, [abierto, idTallerDelUsuario]);
+  }, [abierto]);
 
   const cargarVehiculos = async () => {
     setErrorVehiculos('');
     try {
-      const response = await api.get('/vehiculos?page=1&limit=100');
-      const todos = response.data?.data?.vehiculos || response.data?.data || [];
-      const vehiculosDelTaller = todos.filter((v) => {
-        if (v.mantenimientos && Array.isArray(v.mantenimientos)) {
-          return v.mantenimientos.some((m) => m.taller === idTallerDelUsuario);
-        }
-        return false;
-      });
-      setVehiculos(vehiculosDelTaller);
+      const response = await api.get('/vehiculos');
+      setVehiculos(response.data || []);
     } catch (err) {
       setErrorVehiculos('Error al cargar vehículos');
       console.error('Error cargando vehículos:', err);
     }
   };
+
+  const vehiculosFiltrados = vehiculos.filter(v =>
+    v.padron?.toLowerCase().includes(busquedaVehiculo.toLowerCase()) ||
+    v.matricula?.toLowerCase().includes(busquedaVehiculo.toLowerCase()) ||
+    v.marca?.toLowerCase().includes(busquedaVehiculo.toLowerCase()) ||
+    v.modelo?.toLowerCase().includes(busquedaVehiculo.toLowerCase())
+  );
 
   const manejarEnvio = async () => {
     setError('');
@@ -50,7 +51,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
     }
 
     if (!idTallerDelUsuario) {
-      setError('No se encontró el ID del taller. Vuelve a iniciar sesión.');
+      setError('No se encontró el ID del taller. Volvé a iniciar sesión.');
       return;
     }
 
@@ -72,6 +73,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
       setCategoria('');
       setServicio('');
       setVehiculoSeleccionado('');
+      setBusquedaVehiculo('');
       setKilometraje('');
       setCosto('');
       if (alCreado) alCreado();
@@ -92,12 +94,12 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
           <h3 style={{ fontFamily: 'var(--font-head)', fontSize: '1.4rem', letterSpacing: '0.04em' }}>Nuevo Mantenimiento</h3>
           <button className="modal-close" type="button" onClick={alCerrar}>✕</button>
         </div>
-        {error && <div className="alert alert-error">{error}</div>}
-        {exito && <div className="alert alert-success">{exito}</div>}
+        {error && <div className="alert alert-error show">{error}</div>}
+        {exito && <div className="alert alert-success show">{exito}</div>}
 
         <div className="ai-box">
           <div className="ai-label">Descripción automática con IA</div>
-          <div className="ai-result" id="ai-preview">La descripción se generará automáticamente al crear el mantenimiento usando Gemini AI</div>
+          <div className="ai-result">La descripción se generará automáticamente al crear el mantenimiento usando Gemini AI</div>
         </div>
 
         <div className="form-row">
@@ -140,20 +142,45 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
         <div className="form-group">
           <label className="form-label">Vehículo</label>
           {errorVehiculos ? (
-            <p style={{ fontSize: '12px', color: 'var(--error)' }}>{errorVehiculos}</p>
+            <p style={{ fontSize: '12px', color: 'red' }}>{errorVehiculos}</p>
           ) : (
-            <select
-              className="form-select"
-              value={vehiculoSeleccionado}
-              onChange={(e) => setVehiculoSeleccionado(e.target.value)}
-            >
-              <option value="">Seleccioná un vehículo</option>
-              {vehiculos.map((v) => (
-                <option key={v._id} value={v._id}>
-                  {v.marca} {v.modelo} - {v.padron}
-                </option>
-              ))}
-            </select>
+            <>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Buscar por padrón, matrícula, marca o modelo..."
+                value={busquedaVehiculo}
+                onChange={(e) => {
+                  setBusquedaVehiculo(e.target.value);
+                  setVehiculoSeleccionado('');
+                }}
+              />
+              {busquedaVehiculo && (
+                <select
+                  className="form-select"
+                  style={{ marginTop: '8px' }}
+                  value={vehiculoSeleccionado}
+                  onChange={(e) => setVehiculoSeleccionado(e.target.value)}
+                  size={Math.min(vehiculosFiltrados.length || 1, 5)}
+                >
+                  <option value="">Seleccioná un vehículo</option>
+                  {vehiculosFiltrados.length === 0 ? (
+                    <option disabled>Sin resultados</option>
+                  ) : (
+                    vehiculosFiltrados.map((v) => (
+                      <option key={v._id} value={v._id}>
+                        {v.padron} — {v.matricula} — {v.marca} {v.modelo}
+                      </option>
+                    ))
+                  )}
+                </select>
+              )}
+              {vehiculoSeleccionado && (
+                <p style={{ fontSize: '12px', color: 'var(--success)', marginTop: '4px' }}>
+                  ✓ Vehículo seleccionado
+                </p>
+              )}
+            </>
           )}
         </div>
 
