@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import api from '../../api/api.js';
 
 export default function ModalCategoria({ abierto, alCerrar }) {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [error, setError] = useState('');
   const [exito, setExito] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   if (!abierto) return null;
 
-  const manejarEnvio = () => {
+  const manejarEnvio = async () => {
     if (!nombre) {
       setError('Seleccioná una categoría.');
       setExito('');
@@ -16,7 +18,19 @@ export default function ModalCategoria({ abierto, alCerrar }) {
     }
 
     setError('');
-    setExito('Categoría preparada para creación.');
+    setEnviando(true);
+
+    try {
+      await api.post('/categorias', { nombre, descripcion });
+      setExito(`Categoría "${nombre}" creada correctamente.`);
+      setNombre('');
+      setDescripcion('');
+    } catch (err) {
+      const mensaje = err.response?.data?.message || 'Error al crear la categoría.';
+      setError(mensaje);
+    } finally {
+      setEnviando(false);
+    }
   };
 
   const manejarClickOverlay = (event) => {
@@ -32,8 +46,8 @@ export default function ModalCategoria({ abierto, alCerrar }) {
           <h3 style={{ fontFamily: 'var(--font-head)', fontSize: '1.4rem', letterSpacing: '0.04em' }}>Nueva Categoría</h3>
           <button className="modal-close" type="button" onClick={alCerrar}>✕</button>
         </div>
-        {error && <div className="alert alert-error">{error}</div>}
-        {exito && <div className="alert alert-success">{exito}</div>}
+        {error && <div className="alert alert-error show">{error}</div>}
+        {exito && <div className="alert alert-success show">{exito}</div>}
 
         <div className="form-group">
           <label className="form-label">Nombre</label>
@@ -62,9 +76,10 @@ export default function ModalCategoria({ abierto, alCerrar }) {
           type="button"
           className="btn btn-primary"
           style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+          disabled={enviando}
           onClick={manejarEnvio}
         >
-          Crear categoría
+          {enviando ? 'Creando...' : 'Crear categoría'}
         </button>
       </div>
     </div>
