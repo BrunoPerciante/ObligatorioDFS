@@ -36,6 +36,7 @@ export default function ModalMecanico({ abierto, alCerrar, usuario, alCreado }) 
       setEnviando(true);
       await api.post('/mecanicos', payload);
       setExito('Mecánico creado con éxito.');
+      console.log('Mecánico creado:', payload);
       setNombre('');
       setApellido('');
       if (alCreado) alCreado();

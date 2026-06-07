@@ -3,6 +3,7 @@ import api from '../../api/api.js';
 
 export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCreado }) {
   const [vehiculos, setVehiculos] = useState([]);
+  const [categorias, setCategorias] = useState([]); // ← nuevo
   const [busquedaVehiculo, setBusquedaVehiculo] = useState('');
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState('');
   const [fecha, setFecha] = useState('');
@@ -20,6 +21,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
   useEffect(() => {
     if (abierto) {
       cargarVehiculos();
+      cargarCategorias(); // ← nuevo
     }
   }, [abierto]);
 
@@ -31,6 +33,16 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
     } catch (err) {
       setErrorVehiculos('Error al cargar vehículos');
       console.error('Error cargando vehículos:', err);
+    }
+  };
+
+  // ← nuevo
+  const cargarCategorias = async () => {
+    try {
+      const response = await api.get('/categorias');
+      setCategorias(response.data || []);
+    } catch (err) {
+      console.error('Error cargando categorías:', err);
     }
   };
 
@@ -58,7 +70,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
     const payload = {
       fecha,
       servicio: servicio.trim(),
-      categoria,
+      categoria, // ← ahora es un _id real de la colección Categoria
       vehiculo: vehiculoSeleccionado,
       taller: idTallerDelUsuario,
       kilometraje: Number(kilometraje),
@@ -114,15 +126,18 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
           </div>
           <div className="form-group">
             <label className="form-label">Categoría</label>
+            {/* ← select dinámico en vez de opciones hardcodeadas */}
             <select
               className="form-select"
               value={categoria}
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="">Seleccioná una categoría</option>
-              <option value="mecanica">Mecánica</option>
-              <option value="electricidad">Electricidad</option>
-              <option value="chapa y pintura">Chapa y pintura</option>
+              {categorias.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.nombre}
+                </option>
+              ))}
             </select>
           </div>
         </div>

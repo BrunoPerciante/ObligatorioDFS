@@ -14,8 +14,8 @@ export default function DashboardTaller() {
   const [seccion, setSeccion] = useState('resumen');
   const [mostrarModalMecanico, setMostrarModalMecanico] = useState(false);
   const [mostrarModalMantenimiento, setMostrarModalMantenimiento] = useState(false);
-  const [recargarMecanicos, setRecargarMecanicos] = useState(false);
-  const [recargarMantenimientos, setRecargarMantenimientos] = useState(false);
+  const [recargarMecanicos, setRecargarMecanicos] = useState(0); // ← número en vez de booleano
+  const [recargarMantenimientos, setRecargarMantenimientos] = useState(0); // ← ídem
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { usuario } = useSelector(state => state.auth);
@@ -30,12 +30,11 @@ export default function DashboardTaller() {
   const abrirModalMantenimiento = () => setMostrarModalMantenimiento(true);
   const cerrarModalMantenimiento = () => setMostrarModalMantenimiento(false);
 
-  const refrescarMecanicos = () => setRecargarMecanicos((prev) => !prev);
-  const refrescarMantenimientos = () => setRecargarMantenimientos((prev) => !prev);
+  const refrescarMecanicos = () => setRecargarMecanicos(prev => prev + 1); // ← incrementa
+  const refrescarMantenimientos = () => setRecargarMantenimientos(prev => prev + 1); // ← ídem
 
   return (
     <div className="page active">
-
       <nav>
         <div className="nav-logo">AUTO<span>TRACK</span></div>
         <div className="nav-links">
@@ -49,7 +48,6 @@ export default function DashboardTaller() {
       </nav>
 
       <div className="dashboard-layout">
-
         <div className="sidebar">
           <div className="sidebar-section">
             <div className="sidebar-label">Taller</div>
@@ -83,13 +81,35 @@ export default function DashboardTaller() {
             />
           )}
           {seccion === 'vehiculos' && <Vehiculos usuario={usuario} />}
-          {seccion === 'mecanicos' && <Mecanicos usuario={usuario} alAgregarMecanico={abrirModalMecanico} recargar={recargarMecanicos} />}
-          {seccion === 'mantenimientos' && <MantenimientosTaller usuario={usuario} recargar={recargarMantenimientos} alCrearMantenimiento={abrirModalMantenimiento} />}
+          {seccion === 'mecanicos' && (
+            <Mecanicos
+              usuario={usuario}
+              alAgregarMecanico={abrirModalMecanico}
+              recargar={recargarMecanicos}
+            />
+          )}
+          {seccion === 'mantenimientos' && (
+            <MantenimientosTaller
+              usuario={usuario}
+              recargar={recargarMantenimientos}
+              alCrearMantenimiento={abrirModalMantenimiento}
+            />
+          )}
           {seccion === 'marcas' && <ExplorarMarcasTaller />}
         </div>
 
-        <ModalMecanico abierto={mostrarModalMecanico} alCerrar={cerrarModalMecanico} usuario={usuario} alCreado={refrescarMecanicos} />
-        <ModalMantenimiento abierto={mostrarModalMantenimiento} alCerrar={cerrarModalMantenimiento} usuario={usuario} alCreado={refrescarMantenimientos} />
+        <ModalMecanico
+          abierto={mostrarModalMecanico}
+          alCerrar={cerrarModalMecanico}
+          usuario={usuario}
+          alCreado={refrescarMecanicos}
+        />
+        <ModalMantenimiento
+          abierto={mostrarModalMantenimiento}
+          alCerrar={cerrarModalMantenimiento}
+          usuario={usuario}
+          alCreado={refrescarMantenimientos}
+        />
       </div>
     </div>
   );

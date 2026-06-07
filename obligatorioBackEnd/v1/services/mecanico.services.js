@@ -5,7 +5,8 @@ export const agregarMecanicoService = async (mecanicoData) => {
   const { taller, ...data } = mecanicoData;
 
   const nuevoMecanico = new Mecanico({
-    ...data
+    ...data,
+    taller
   });
 
   const mecanicoGuardado = await nuevoMecanico.save();

@@ -34,16 +34,23 @@ export const crearMantenimientoService = async (mantenimientoData) => {
 
   const prompt = `Redactá de forma profesional, clara y muy breve la descripción de un mantenimiento vehicular. El taller realizó lo siguiente: ${mantenimientoData.servicio}. Devolvé solo la descripción, sin títulos ni explicaciones extra.`;
 
-  const response = await axios.post(ENDPOINT, {
-    contents: [{ parts: [{ text: prompt }] }]
-  }, {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': API_KEY
-    }
-  });
+  let descripcion = mantenimientoData.servicio; // fallback por defecto
 
-  const descripcion = response.data.candidates[0].content.parts[0].text;
+  try {
+    const response = await axios.post(ENDPOINT, {
+      contents: [{ parts: [{ text: prompt }] }]
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': API_KEY
+      }
+    });
+
+    descripcion = response.data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error('Error al generar descripción con Gemini:', error.message);
+    // descripcion ya tiene el valor fallback
+  }
 
   const nuevoMantenimiento = new Mantenimiento({
     ...mantenimientoData,
