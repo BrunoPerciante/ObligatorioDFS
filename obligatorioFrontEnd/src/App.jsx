@@ -2,7 +2,7 @@ import AuthPage from './pages/AuthPage'
 import DashboardDuenio from './pages/DashboardDuenio'
 import DashboardTaller from './pages/DashboardTaller'
 import ContainerPage from './pages/ContainerPage'
-import ProtectedRoute from './app/guards/ProtectedRoute'
+import ProtectedRoute from './app/guards/protectedRoute'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from "./store/store"

@@ -3,7 +3,7 @@ import api from '../../api/api.js';
 
 export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCreado }) {
   const [vehiculos, setVehiculos] = useState([]);
-  const [categorias, setCategorias] = useState([]); // ← nuevo
+  const [categorias, setCategorias] = useState([]);
   const [busquedaVehiculo, setBusquedaVehiculo] = useState('');
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState('');
   const [fecha, setFecha] = useState('');
@@ -21,7 +21,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
   useEffect(() => {
     if (abierto) {
       cargarVehiculos();
-      cargarCategorias(); // ← nuevo
+      cargarCategorias();
     }
   }, [abierto]);
 
@@ -36,7 +36,6 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
     }
   };
 
-  // ← nuevo
   const cargarCategorias = async () => {
     try {
       const response = await api.get('/categorias');
@@ -70,7 +69,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
     const payload = {
       fecha,
       servicio: servicio.trim(),
-      categoria, // ← ahora es un _id real de la colección Categoria
+      categoria,
       vehiculo: vehiculoSeleccionado,
       taller: idTallerDelUsuario,
       kilometraje: Number(kilometraje),
@@ -126,7 +125,6 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
           </div>
           <div className="form-group">
             <label className="form-label">Categoría</label>
-            {/* ← select dinámico en vez de opciones hardcodeadas */}
             <select
               className="form-select"
               value={categoria}
