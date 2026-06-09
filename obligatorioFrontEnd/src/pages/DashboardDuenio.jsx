@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../features/auth/auth.slice";
 import api from "../api/api";
 import Resumen from "../components/dashboard/duenio/Resumen";
 import Vehiculos from "../components/dashboard/duenio/Vehiculos";
 import Mantenimientos from "../components/dashboard/duenio/Mantenimientos";
 import ExplorarMarcas from "../components/dashboard/duenio/ExplorarMarcas";
 import GraficoMantenimientos from "../components/dashboard/graficos/GraficoMantenimientos";
+import { logout, setUsuario } from "../features/auth/auth.slice";
 
 export default function DashboardDuenio() {
   const [seccion, setSeccion] = useState("resumen");
@@ -21,7 +21,7 @@ export default function DashboardDuenio() {
   const [createSuccess, setCreateSuccess] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { usuario } = useSelector((state) => state.auth);
+  const { usuario, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const cargarVehiculos = async () => {
@@ -90,9 +90,48 @@ export default function DashboardDuenio() {
     }
   };
 
+  const handleEditarVehiculo = async (id, datos) => {
+  try {
+    const response = await api.put(`/vehiculos/${id}`, {
+      ...datos
+    });
+
+    setVehiculos(prev =>
+      prev.map(v =>
+        v._id === id ? response.data.vehiculo : v
+      )
+    );
+
+    setCreateSuccess("Vehículo actualizado correctamente");
+  } catch (error) {
+    setCreateError(
+      error.response?.data?.message ||
+      "No se pudo actualizar el vehículo."
+    );
+  }
+};
+
+  const handleEliminarVehiculo = async (id) => {
+    try {
+      await api.delete(`/vehiculos/${id}`);
+      setVehiculos(prev => prev.filter(v => v._id !== id));
+    } catch (error) {
+      setCreateError(error.response?.data?.message || "No se pudo eliminar el vehículo.");
+    }
+  };
+
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
+  };
+
+  const handleCambiarPlan = async (nuevoPlan) => {
+    try {
+      const response = await api.patch(`/usuarios/${usuario._id}/plan`, { plan: nuevoPlan });
+      dispatch(setUsuario({ usuario: response.data.usuario, token }));
+    } catch (error) {
+      setCreateError(error.response?.data?.message || "No se pudo cambiar el plan.");
+    }
   };
 
   return (
@@ -180,7 +219,7 @@ export default function DashboardDuenio() {
 
         <div className="main-content">
           {seccion === "resumen" && (
-            <Resumen usuario={usuario} vehiculos={vehiculos} />
+            <Resumen usuario={usuario} vehiculos={vehiculos} onCambiarPlan={handleCambiarPlan} />
           )}
           {seccion === "vehiculos" && (
             <Vehiculos
@@ -188,8 +227,10 @@ export default function DashboardDuenio() {
               loading={vehiculosLoading}
               error={vehiculosError}
               onCreate={handleCrearVehiculo}
+              onDelete={handleEliminarVehiculo}
               createError={createError}
               createSuccess={createSuccess}
+              onEdit={handleEditarVehiculo}
             />
           )}
           {seccion === "mantenimientos" && (

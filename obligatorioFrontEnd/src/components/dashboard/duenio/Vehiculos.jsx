@@ -1,6 +1,23 @@
 import { useState } from 'react';
 
-export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, createError, createSuccess }) {
+export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, createError, createSuccess, onEdit }) {
+
+  const [vehiculoEditando, setVehiculoEditando] = useState(null);
+
+  const cargarVehiculo = (vehiculo) => {
+    setVehiculoEditando(vehiculo);
+
+    setForm({
+      padron: vehiculo.padron,
+      matricula: vehiculo.matricula,
+      marca: vehiculo.marca,
+      modelo: vehiculo.modelo,
+      anio: vehiculo.anio,
+      kilometraje: vehiculo.kilometraje,
+    });
+  };
+
+
   const [form, setForm] = useState({
     padron: '',
     matricula: '',
@@ -15,15 +32,36 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!onCreate) return;
 
-    await onCreate({
+    const datos = {
       ...form,
       anio: Number(form.anio),
       kilometraje: Number(form.kilometraje),
-    });
+    };
+
+    if (vehiculoEditando) {
+      await onEdit(vehiculoEditando._id, datos);
+
+      setVehiculoEditando(null);
+
+      setForm({
+        padron: "",
+        matricula: "",
+        marca: "",
+        modelo: "",
+        anio: "",
+        kilometraje: "",
+      });
+
+    } else {
+
+      await onCreate(datos);
+
+    }
   };
 
   return (
@@ -41,7 +79,14 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
           <input name="modelo" value={form.modelo} onChange={handleChange} placeholder="Modelo" />
           <input name="anio" type="number" value={form.anio} onChange={handleChange} placeholder="Año" />
           <input name="kilometraje" type="number" value={form.kilometraje} onChange={handleChange} placeholder="Kilometraje" />
-          <button type="submit" className="btn btn-primary btn-sm">Guardar vehículo</button>
+          <button
+            type="submit"
+            className="btn btn-primary btn-sm"
+          >
+            {vehiculoEditando
+              ? "Actualizar vehículo"
+              : "Guardar vehículo"}
+          </button>
         </form>
         {createError && <div className="empty-state" style={{ color: 'var(--danger)' }}>{createError}</div>}
         {createSuccess && <div className="empty-state" style={{ color: 'var(--success)' }}>{createSuccess}</div>}
@@ -71,8 +116,20 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
                     <td>{vehiculo.marca} {vehiculo.modelo}</td>
                     <td>{vehiculo.anio}</td>
                     <td>{vehiculo.kilometraje}</td>
+                    <td>
+
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => cargarVehiculo(vehiculo)}
+                      >
+                        Modificar
+                      </button>
+
+                    </td>
+
                   </tr>
                 ))}
+
               </tbody>
             </table>
           </div>
