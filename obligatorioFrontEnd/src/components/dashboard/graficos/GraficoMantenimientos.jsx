@@ -75,7 +75,7 @@ export default function GraficoMantenimientos({ vehiculos = [], esTaller = false
 
   useEffect(() => {
     cargarDatos();
-  }, [vehiculos, esTaller]);
+  }, [vehiculos.length, esTaller]);
 
   const cargarDatos = async () => {
     setCargando(true);
