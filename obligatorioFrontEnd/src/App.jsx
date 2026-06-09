@@ -8,7 +8,8 @@ import { Provider } from 'react-redux'
 import { store } from "./store/store"
 import './App.css'
 import NotFoundPage from './pages/NotFoundPage'
-
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 function App() {
   return (
     <Provider store={store}>
@@ -31,6 +32,7 @@ function App() {
           <Route path="*" element= {<NotFoundPage/>}></Route>
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </Provider>
   )
 }

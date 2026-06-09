@@ -125,14 +125,27 @@ export default function DashboardDuenio() {
     navigate("/");
   };
 
-  const handleCambiarPlan = async (nuevoPlan) => {
+  /*const handleCambiarPlan = async (nuevoPlan) => {
     try {
       const response = await api.patch(`/usuarios/${usuario._id}/plan`, { plan: nuevoPlan });
       dispatch(setUsuario({ usuario: response.data.usuario, token }));
     } catch (error) {
       setCreateError(error.response?.data?.message || "No se pudo cambiar el plan.");
     }
-  };
+  };*/
+
+  const handleCambiarPlan = async (nuevoPlan) => {
+  try {
+    const response = await api.patch(`/usuarios/${usuario._id}/plan`, { plan: nuevoPlan });
+    // Merge: mantener el usuario actual, solo actualizar el plan
+    dispatch(setUsuario({ 
+      usuario: { ...usuario, plan: response.data.usuario.plan }, 
+      token 
+    }));
+  } catch (error) {
+    setCreateError(error.response?.data?.message || "No se pudo cambiar el plan.");
+  }
+};
 
   return (
     <div className="page active">

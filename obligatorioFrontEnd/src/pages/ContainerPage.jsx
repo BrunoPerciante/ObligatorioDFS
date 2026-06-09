@@ -1,7 +1,7 @@
 import { Outlet } from "react-router"
 
 
-const ContainerPage = () => {
+/*const ContainerPage = () => {
     return (
         <>
             <header className="main-header">
@@ -15,6 +15,8 @@ const ContainerPage = () => {
             <Outlet />
         </>
     )
-}
+}*/
+
+const ContainerPage = () => <Outlet />;
 
 export default ContainerPage

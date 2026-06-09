@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, createError, createSuccess, onEdit }) {
+/*export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, createError, createSuccess, onEdit }) {*/
+export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, onDelete, createError, createSuccess, onEdit }) {
 
   const [vehiculoEditando, setVehiculoEditando] = useState(null);
 
@@ -124,7 +125,13 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
                       >
                         Modificar
                       </button>
-
+ <button
+    className="btn btn-danger btn-sm"
+    style={{ marginLeft: '6px' }}
+    onClick={() => onDelete(vehiculo._id)}
+  >
+    Eliminar
+  </button>
                     </td>
 
                   </tr>
