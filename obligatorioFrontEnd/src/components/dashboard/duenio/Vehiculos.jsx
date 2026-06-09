@@ -1,13 +1,12 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
-/*export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, createError, createSuccess, onEdit }) {*/
 export default function Vehiculos({ vehiculos = [], loading = false, error = null, onCreate, onDelete, createError, createSuccess, onEdit }) {
 
   const [vehiculoEditando, setVehiculoEditando] = useState(null);
 
   const cargarVehiculo = (vehiculo) => {
     setVehiculoEditando(vehiculo);
-
     setForm({
       padron: vehiculo.padron,
       matricula: vehiculo.matricula,
@@ -17,7 +16,6 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
       kilometraje: vehiculo.kilometraje,
     });
   };
-
 
   const [form, setForm] = useState({
     padron: '',
@@ -33,10 +31,14 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!onCreate) return;
+
+    if (!/^[0-9]+$/.test(form.padron)) {
+      toast.error('El padrón solo puede contener números');
+      return;
+    }
 
     const datos = {
       ...form,
@@ -46,22 +48,10 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
 
     if (vehiculoEditando) {
       await onEdit(vehiculoEditando._id, datos);
-
       setVehiculoEditando(null);
-
-      setForm({
-        padron: "",
-        matricula: "",
-        marca: "",
-        modelo: "",
-        anio: "",
-        kilometraje: "",
-      });
-
+      setForm({ padron: '', matricula: '', marca: '', modelo: '', anio: '', kilometraje: '' });
     } else {
-
       await onCreate(datos);
-
     }
   };
 
@@ -80,13 +70,8 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
           <input name="modelo" value={form.modelo} onChange={handleChange} placeholder="Modelo" />
           <input name="anio" type="number" value={form.anio} onChange={handleChange} placeholder="Año" />
           <input name="kilometraje" type="number" value={form.kilometraje} onChange={handleChange} placeholder="Kilometraje" />
-          <button
-            type="submit"
-            className="btn btn-primary btn-sm"
-          >
-            {vehiculoEditando
-              ? "Actualizar vehículo"
-              : "Guardar vehículo"}
+          <button type="submit" className="btn btn-primary btn-sm">
+            {vehiculoEditando ? "Actualizar vehículo" : "Guardar vehículo"}
           </button>
         </form>
         {createError && <div className="empty-state" style={{ color: 'var(--danger)' }}>{createError}</div>}
@@ -107,6 +92,7 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
                   <th>Marca / Modelo</th>
                   <th>Año</th>
                   <th>Kilometraje</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -118,25 +104,22 @@ export default function Vehiculos({ vehiculos = [], loading = false, error = nul
                     <td>{vehiculo.anio}</td>
                     <td>{vehiculo.kilometraje}</td>
                     <td>
-
                       <button
                         className="btn btn-ghost btn-sm"
                         onClick={() => cargarVehiculo(vehiculo)}
                       >
                         Modificar
                       </button>
- <button
-    className="btn btn-danger btn-sm"
-    style={{ marginLeft: '6px' }}
-    onClick={() => onDelete(vehiculo._id)}
-  >
-    Eliminar
-  </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        style={{ marginLeft: '6px' }}
+                        onClick={() => onDelete(vehiculo._id)}
+                      >
+                        Eliminar
+                      </button>
                     </td>
-
                   </tr>
                 ))}
-
               </tbody>
             </table>
           </div>

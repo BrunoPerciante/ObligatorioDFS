@@ -121,6 +121,7 @@ export default function ModalMantenimiento({ abierto, alCerrar, usuario, alCread
               className="form-input"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
             />
           </div>
           <div className="form-group">
