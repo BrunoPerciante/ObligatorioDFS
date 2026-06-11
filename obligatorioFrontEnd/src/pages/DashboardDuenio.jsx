@@ -8,6 +8,8 @@ import Mantenimientos from "../components/dashboard/duenio/Mantenimientos";
 import ExplorarMarcas from "../components/dashboard/duenio/ExplorarMarcas";
 import GraficoMantenimientos from "../components/dashboard/graficos/GraficoMantenimientos";
 import { logout, setUsuario } from "../features/auth/auth.slice";
+// NUEVO: importamos el componente de subir imagen
+import SubirImagen from "../components/dashboard/SubirImagen";
 
 export default function DashboardDuenio() {
   const [seccion, setSeccion] = useState("resumen");
@@ -27,7 +29,6 @@ export default function DashboardDuenio() {
     const cargarVehiculos = async () => {
       setVehiculosLoading(true);
       setVehiculosError(null);
-
       try {
         const response = await api.get("/duenios/misVehiculos");
         setVehiculos(response.data || []);
@@ -47,7 +48,6 @@ export default function DashboardDuenio() {
     const cargarMantenimientos = async () => {
       setMantenimientosLoading(true);
       setMantenimientosError(null);
-
       try {
         const response = await api.get("/mantenimientos?page=1&limit=100");
         setMantenimientos(response.data?.mantenimientos || []);
@@ -69,47 +69,27 @@ export default function DashboardDuenio() {
       setCreateError("No se encontró el usuario autenticado.");
       return;
     }
-
     setCreateError(null);
     setCreateSuccess(null);
-
     try {
-      const body = {
-        ...vehiculoData,
-        duenio: usuario._id,
-      };
+      const body = { ...vehiculoData, duenio: usuario._id };
       const response = await api.post("/vehiculos", body);
-      setCreateSuccess(
-        response.data?.message || "Vehículo creado correctamente",
-      );
+      setCreateSuccess(response.data?.message || "Vehículo creado correctamente");
       setVehiculos((prev) => [...prev, response.data.vehiculo]);
     } catch (error) {
-      setCreateError(
-        error.response?.data?.message || "No se pudo crear el vehículo.",
-      );
+      setCreateError(error.response?.data?.message || "No se pudo crear el vehículo.");
     }
   };
 
   const handleEditarVehiculo = async (id, datos) => {
-  try {
-    const response = await api.put(`/vehiculos/${id}`, {
-      ...datos
-    });
-
-    setVehiculos(prev =>
-      prev.map(v =>
-        v._id === id ? response.data.vehiculo : v
-      )
-    );
-
-    setCreateSuccess("Vehículo actualizado correctamente");
-  } catch (error) {
-    setCreateError(
-      error.response?.data?.message ||
-      "No se pudo actualizar el vehículo."
-    );
-  }
-};
+    try {
+      const response = await api.put(`/vehiculos/${id}`, { ...datos });
+      setVehiculos(prev => prev.map(v => v._id === id ? response.data.vehiculo : v));
+      setCreateSuccess("Vehículo actualizado correctamente");
+    } catch (error) {
+      setCreateError(error.response?.data?.message || "No se pudo actualizar el vehículo.");
+    }
+  };
 
   const handleEliminarVehiculo = async (id) => {
     try {
@@ -125,68 +105,28 @@ export default function DashboardDuenio() {
     navigate("/");
   };
 
-  /*const handleCambiarPlan = async (nuevoPlan) => {
+  const handleCambiarPlan = async (nuevoPlan) => {
     try {
       const response = await api.patch(`/usuarios/${usuario._id}/plan`, { plan: nuevoPlan });
-      dispatch(setUsuario({ usuario: response.data.usuario, token }));
+      dispatch(setUsuario({ usuario: { ...usuario, plan: response.data.usuario.plan }, token }));
     } catch (error) {
       setCreateError(error.response?.data?.message || "No se pudo cambiar el plan.");
     }
-  };*/
-
-  const handleCambiarPlan = async (nuevoPlan) => {
-  try {
-    const response = await api.patch(`/usuarios/${usuario._id}/plan`, { plan: nuevoPlan });
-    // Merge: mantener el usuario actual, solo actualizar el plan
-    dispatch(setUsuario({ 
-      usuario: { ...usuario, plan: response.data.usuario.plan }, 
-      token 
-    }));
-  } catch (error) {
-    setCreateError(error.response?.data?.message || "No se pudo cambiar el plan.");
-  }
-};
+  };
 
   return (
     <div className="page active">
       <nav>
-        <div className="nav-logo">
-          AUTO<span>TRACK</span>
-        </div>
+        <div className="nav-logo">AUTO<span>TRACK</span></div>
         <div className="nav-links">
-          <button
-            className={seccion === "resumen" ? "active" : ""}
-            onClick={() => setSeccion("resumen")}
-          >
-            Dashboard
-          </button>
-          <button
-            className={seccion === "vehiculos" ? "active" : ""}
-            onClick={() => setSeccion("vehiculos")}
-          >
-            Mis Vehículos
-          </button>
-          <button
-            className={seccion === "mantenimientos" ? "active" : ""}
-            onClick={() => setSeccion("mantenimientos")}
-          >
-            Mantenimientos
-          </button>
-          <button
-            className={seccion === "graficos" ? "active" : ""}
-            onClick={() => setSeccion("graficos")}
-          >
-            Gráficos
-          </button>
-          <button
-            className={seccion === "marcas" ? "active" : ""}
-            onClick={() => setSeccion("marcas")}
-          >
-            Explorar Marcas
-          </button>
-          <button className="btn-logout" onClick={handleLogout}>
-            Salir
-          </button>
+          <button className={seccion === "resumen" ? "active" : ""} onClick={() => setSeccion("resumen")}>Dashboard</button>
+          <button className={seccion === "vehiculos" ? "active" : ""} onClick={() => setSeccion("vehiculos")}>Mis Vehículos</button>
+          <button className={seccion === "mantenimientos" ? "active" : ""} onClick={() => setSeccion("mantenimientos")}>Mantenimientos</button>
+          <button className={seccion === "graficos" ? "active" : ""} onClick={() => setSeccion("graficos")}>Gráficos</button>
+          <button className={seccion === "marcas" ? "active" : ""} onClick={() => setSeccion("marcas")}>Explorar Marcas</button>
+          {/* NUEVO: botón en el nav */}
+          <button className={seccion === "imagenes" ? "active" : ""} onClick={() => setSeccion("imagenes")}>Imágenes</button>
+          <button className="btn-logout" onClick={handleLogout}>Salir</button>
         </div>
       </nav>
 
@@ -194,38 +134,27 @@ export default function DashboardDuenio() {
         <div className="sidebar">
           <div className="sidebar-section">
             <div className="sidebar-label">Mi cuenta</div>
-            <button
-              className={`sidebar-btn ${seccion === "resumen" ? "active" : ""}`}
-              onClick={() => setSeccion("resumen")}
-            >
+            <button className={`sidebar-btn ${seccion === "resumen" ? "active" : ""}`} onClick={() => setSeccion("resumen")}>
               <span className="sidebar-icon">⊞</span> Resumen
             </button>
-            <button
-              className={`sidebar-btn ${seccion === "vehiculos" ? "active" : ""}`}
-              onClick={() => setSeccion("vehiculos")}
-            >
+            <button className={`sidebar-btn ${seccion === "vehiculos" ? "active" : ""}`} onClick={() => setSeccion("vehiculos")}>
               <span className="sidebar-icon">🚗</span> Vehículos
             </button>
-            <button
-              className={`sidebar-btn ${seccion === "mantenimientos" ? "active" : ""}`}
-              onClick={() => setSeccion("mantenimientos")}
-            >
+            <button className={`sidebar-btn ${seccion === "mantenimientos" ? "active" : ""}`} onClick={() => setSeccion("mantenimientos")}>
               <span className="sidebar-icon">🔧</span> Mantenimientos
             </button>
           </div>
           <div className="sidebar-section">
             <div className="sidebar-label">Herramientas</div>
-            <button
-              className={`sidebar-btn ${seccion === "graficos" ? "active" : ""}`}
-              onClick={() => setSeccion("graficos")}
-            >
+            <button className={`sidebar-btn ${seccion === "graficos" ? "active" : ""}`} onClick={() => setSeccion("graficos")}>
               <span className="sidebar-icon">📊</span> Gráficos
             </button>
-            <button
-              className={`sidebar-btn ${seccion === "marcas" ? "active" : ""}`}
-              onClick={() => setSeccion("marcas")}
-            >
+            <button className={`sidebar-btn ${seccion === "marcas" ? "active" : ""}`} onClick={() => setSeccion("marcas")}>
               <span className="sidebar-icon">🔍</span> Marcas / Modelos
+            </button>
+            {/* NUEVO: botón en el sidebar */}
+            <button className={`sidebar-btn ${seccion === "imagenes" ? "active" : ""}`} onClick={() => setSeccion("imagenes")}>
+              <span className="sidebar-icon">📷</span> Subir imagen
             </button>
           </div>
         </div>
@@ -262,8 +191,9 @@ export default function DashboardDuenio() {
               <GraficoMantenimientos vehiculos={vehiculos} esTaller={false} />
             </div>
           )}
-
           {seccion === "marcas" && <ExplorarMarcas />}
+          {/* NUEVO: renderizamos SubirImagen cuando seccion es "imagenes" */}
+          {seccion === "imagenes" && <SubirImagen />}
         </div>
       </div>
     </div>
