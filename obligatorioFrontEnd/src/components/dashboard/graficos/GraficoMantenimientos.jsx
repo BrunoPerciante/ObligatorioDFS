@@ -119,8 +119,6 @@ export default function GraficoMantenimientos({ vehiculos = [], esTaller = false
     }
   };
 
-  // --- RENDER ---
-
   if (cargando) {
     return (
       <div className="card" style={{ padding: '32px', textAlign: 'center' }}>
@@ -198,7 +196,6 @@ export default function GraficoMantenimientos({ vehiculos = [], esTaller = false
             </PieChart>
           </ResponsiveContainer>
 
-          {/* Detalle debajo del gráfico */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${datos.length}, 1fr)`,

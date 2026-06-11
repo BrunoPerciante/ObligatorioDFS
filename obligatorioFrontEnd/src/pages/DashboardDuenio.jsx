@@ -8,7 +8,6 @@ import Mantenimientos from "../components/dashboard/duenio/Mantenimientos";
 import ExplorarMarcas from "../components/dashboard/duenio/ExplorarMarcas";
 import GraficoMantenimientos from "../components/dashboard/graficos/GraficoMantenimientos";
 import { logout, setUsuario } from "../features/auth/auth.slice";
-// NUEVO: importamos el componente de subir imagen
 import SubirImagen from "../components/dashboard/SubirImagen";
 
 export default function DashboardDuenio() {
@@ -192,7 +191,6 @@ export default function DashboardDuenio() {
             </div>
           )}
           {seccion === "marcas" && <ExplorarMarcas />}
-          {/* NUEVO: renderizamos SubirImagen cuando seccion es "imagenes" */}
           {seccion === "imagenes" && <SubirImagen />}
         </div>
       </div>

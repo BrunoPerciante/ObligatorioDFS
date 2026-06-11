@@ -12,7 +12,6 @@ export default function SubirImagen() {
     const file = e.target.files[0];
     if (!file) return;
     setArchivo(file);
-    // muestra preview de la imagen antes de subir
     setPreview(URL.createObjectURL(file));
     setUrlSubida('');
     setError('');
@@ -28,7 +27,6 @@ export default function SubirImagen() {
     setError('');
 
     try {
-      // FormData porque estamos mandando un archivo, no JSON
       const formData = new FormData();
       formData.append('imagen', archivo);
 
@@ -91,7 +89,6 @@ export default function SubirImagen() {
           {cargando ? 'Subiendo...' : 'Subir imagen'}
         </button>
 
-        {/* URL devuelta por Cloudinary */}
         {urlSubida && (
           <div style={{ marginTop: '16px' }}>
             <p className="form-label">Imagen subida exitosamente</p>

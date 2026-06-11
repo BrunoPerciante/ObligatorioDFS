@@ -11,7 +11,6 @@ import ModalMecanico from "../components/modals/ModalMecanico";
 import ModalMantenimiento from "../components/modals/ModalMantenimiento";
 import GraficoMantenimientos from "../components/dashboard/graficos/GraficoMantenimientos";
 import GraficoEarningsTaller from "../components/dashboard/graficos/GraficoEarningsTaller";
-// NUEVO: importamos el componente de subir imagen
 import SubirImagen from "../components/dashboard/SubirImagen";
 
 export default function DashboardTaller() {
@@ -80,7 +79,6 @@ export default function DashboardTaller() {
             <button className={`sidebar-btn ${seccion === "marcas" ? "active" : ""}`} onClick={() => setSeccion("marcas")}>
               <span className="sidebar-icon">🔍</span> Marcas / Modelos
             </button>
-            {/* NUEVO: botón en el sidebar */}
             <button className={`sidebar-btn ${seccion === "imagenes" ? "active" : ""}`} onClick={() => setSeccion("imagenes")}>
               <span className="sidebar-icon">📷</span> Subir imagen
             </button>
@@ -122,7 +120,6 @@ export default function DashboardTaller() {
             </div>
           )}
           {seccion === "marcas" && <ExplorarMarcasTaller />}
-          {/* NUEVO: renderizamos SubirImagen cuando seccion es "imagenes" */}
           {seccion === "imagenes" && <SubirImagen />}
         </div>
 

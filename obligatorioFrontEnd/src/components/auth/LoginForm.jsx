@@ -37,12 +37,6 @@ export default function LoginForm({ activo = true, rol = 'duenio', loginSchema }
       toast.success('¡Bienvenido/a!');
       reset();
       navigate(rol === 'duenio' ? '/duenio' : '/taller');
-
-      /* } catch (error) {
-         console.error('Error en login:', error);
-         const message = error.response?.data?.message || error.message || "Error al iniciar sesión";
-         dispatch(setError(message));
-         toast.error(message);*/
     } catch (error) {
       console.error('Error en login:', error);
       const mensajeBackend = error.response?.data?.message || '';

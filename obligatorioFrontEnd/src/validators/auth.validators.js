@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-// ============ LOGIN SCHEMAS ============
+// ============ LOGIN SCHEMA ============
 
 export const loginDuenioSchema = Joi.object({
     email: Joi.string()
@@ -40,7 +40,7 @@ export const loginTallerSchema = Joi.object({
         })
 });
 
-// ============ REGISTER SCHEMAS ============
+// ============ REGISTER SCHEMA ============
 
 export const registerDuenioSchema = Joi.object({
     email: Joi.string()
@@ -117,8 +117,6 @@ export const registerTallerSchema = Joi.object({
             'string.pattern.base': 'El teléfono no es válido'
         })
 });
-
-// ============ HELPER FUNCTIONS ============
 
 export const getLoginSchema = (rol) => {
     return rol === 'duenio' ? loginDuenioSchema : loginTallerSchema;

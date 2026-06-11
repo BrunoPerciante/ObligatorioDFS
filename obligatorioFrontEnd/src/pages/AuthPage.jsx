@@ -15,7 +15,6 @@ export default function AuthPage() {
     setPestanaActiva(prev => prev === 'login' ? 'registro' : 'login');
   }
 
-  // Obtener los schemas corretos basándose en el rol y la pestaña
   const loginSchemaActual = getLoginSchema(rol);
   const registerSchemaActual = getRegisterSchema(rol);
 
@@ -50,7 +49,6 @@ export default function AuthPage() {
           </button>
         </div>
 
-        {/* SELECTOR DE ROL - UNO SOLO PARA AMBOS FORMULARIOS */}
         <div className="auth-role-tabs" style={{ marginBottom: '20px' }}>
           <button
             className={`auth-role-tab ${rol === 'duenio' ? 'active' : ''}`}
@@ -66,19 +64,16 @@ export default function AuthPage() {
           </button>
         </div>
 
-        {/* BADGE DEL ROL ACTUAL */}
         <div className="tag tag-plus" style={{ marginBottom: '16px', fontSize: '10px' }}>
           ROL: {rol === 'duenio' ? 'DUEÑO' : 'TALLER'}
         </div>
 
-        {/* LOGIN */}
         <LoginForm
           activo={pestanaActiva === 'login'}
           rol={rol}
           loginSchema={loginSchemaActual}
         />
 
-        {/* REGISTRO */}
         <RegisterForm
           activo={pestanaActiva === 'registro'}
           rol={rol}

@@ -49,7 +49,6 @@ export default function Mantenimientos({
     if (vehiculos.length > 0) {
       cargarMantenimientos();
     }
-  // NUEVO: paginaActual como dependencia
   }, [vehiculos, paginaActual]);
 
   const mantenimientosFiltrados = mantenimientosLocal.filter(m => {
@@ -83,7 +82,6 @@ export default function Mantenimientos({
           value={busqueda}
           onChange={(e) => {
             setBusqueda(e.target.value);
-            // NUEVO: al buscar volvemos a página 1
             setPaginaActual(1);
           }}
         />
@@ -92,7 +90,6 @@ export default function Mantenimientos({
           value={vehiculoFilter}
           onChange={(e) => {
             setVehiculoFilter(e.target.value);
-            // NUEVO: al cambiar filtro volvemos a página 1
             setPaginaActual(1);
           }}
           style={{ width: '200px' }}
@@ -172,7 +169,6 @@ export default function Mantenimientos({
             </table>
           </div>
 
-          {/* NUEVO: botones de paginación */}
           {totalPaginas > 1 && (
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '16px', justifyContent: 'center' }}>
               <button

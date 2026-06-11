@@ -1,6 +1,3 @@
-// IMPORTANTE: instalar recharts si no está
-// npm install recharts
-
 import { useState, useEffect } from 'react';
 import {
   BarChart,
@@ -14,7 +11,6 @@ import {
 } from 'recharts';
 import api from '../../../api/api.js';
 
-// Devuelve la etiqueta de semana relativa (Sem actual, Sem -1, etc.)
 const obtenerEtiquetaSemana = (offsetSemanas) => {
   if (offsetSemanas === 0) return 'Esta sem.';
   if (offsetSemanas === -1) return 'Sem -1';
@@ -23,7 +19,6 @@ const obtenerEtiquetaSemana = (offsetSemanas) => {
   return `Sem ${offsetSemanas}`;
 };
 
-// Calcula el lunes de la semana actual
 const getLunesDeSemana = (fecha) => {
   const d = new Date(fecha);
   const dia = d.getDay(); // 0=domingo
@@ -153,7 +148,6 @@ export default function GraficoEarningsTaller({ usuario }) {
         </span>
       </div>
 
-      {/* KPIs rápidos */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
