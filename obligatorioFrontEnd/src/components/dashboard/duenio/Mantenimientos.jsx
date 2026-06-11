@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../../../api/api.js';
-import { toast } from 'react-toastify';
 
 export default function Mantenimientos({ 
   vehiculos = [], 
@@ -11,25 +10,28 @@ export default function Mantenimientos({
   onDelete,
   onEdit 
 }) {
-  const [mantenimientosLocal, setMantenimientosLocal] = useState(mantenimientos);
-  const [localLoading, setLocalLoading] = useState(loading);
-  const [localError, setLocalError] = useState(error);
+  const [mantenimientosLocal, setMantenimientosLocal] = useState([]);
+  const [localLoading, setLocalLoading] = useState(false);
+  const [localError, setLocalError] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [vehiculoFilter, setVehiculoFilter] = useState('todos');
+  // NUEVO: estados de paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
 
-  // Cargar mantenimientos de la API (solo del dueño)
   useEffect(() => {
     const cargarMantenimientos = async () => {
       setLocalLoading(true);
       setLocalError(null);
 
       try {
-        // Obtener todos los mantenimientos
-        const response = await api.get('/mantenimientos?page=1&limit=100');
-        // Backend devuelve: { message, data: { mantenimientos, totalPages, page, limit } }
+        // NUEVO: usamos paginaActual en la URL
+        const response = await api.get(`/mantenimientos?page=${paginaActual}&limit=5`);
         const todos = response.data?.data?.mantenimientos || [];
+        // NUEVO: guardamos totalPaginas del response
+        const total = response.data?.data?.totalPages || 1;
+        setTotalPaginas(total);
         
-        // Filtrar solo los que pertenecen a vehículos del dueño
         const vehiculoIds = vehiculos.map(v => v._id);
         const mantenimientosDelDuenio = todos.filter(m => 
           vehiculoIds.includes(m.vehiculo?._id)
@@ -47,9 +49,9 @@ export default function Mantenimientos({
     if (vehiculos.length > 0) {
       cargarMantenimientos();
     }
-  }, [vehiculos]);
+  // NUEVO: paginaActual como dependencia
+  }, [vehiculos, paginaActual]);
 
-  // Filtrar por búsqueda y vehículo (localmente)
   const mantenimientosFiltrados = mantenimientosLocal.filter(m => {
     const matchBusqueda = !busqueda || 
       m.servicio?.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -73,19 +75,26 @@ export default function Mantenimientos({
         <p style={{ fontSize: '12px', color: 'var(--muted)' }}>Los mantenimientos son registrados por los talleres</p>
       </div>
 
-      {/* BUSCADOR */}
       <div className="search-bar" style={{ marginBottom: '16px' }}>
         <input 
           type="text"
           className="search-input"
           placeholder="Buscar por servicio o vehículo..."
           value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
+          onChange={(e) => {
+            setBusqueda(e.target.value);
+            // NUEVO: al buscar volvemos a página 1
+            setPaginaActual(1);
+          }}
         />
         <select 
           className="form-select"
           value={vehiculoFilter}
-          onChange={(e) => setVehiculoFilter(e.target.value)}
+          onChange={(e) => {
+            setVehiculoFilter(e.target.value);
+            // NUEVO: al cambiar filtro volvemos a página 1
+            setPaginaActual(1);
+          }}
           style={{ width: '200px' }}
         >
           <option value="todos">Todos los vehículos</option>
@@ -97,7 +106,6 @@ export default function Mantenimientos({
         </select>
       </div>
 
-      {/* INDICADORES DE ESTADO */}
       {localLoading && (
         <div className="empty-state" style={{ padding: '30px' }}>
           <div className="spinner"></div>
@@ -111,7 +119,6 @@ export default function Mantenimientos({
         </div>
       )}
 
-      {/* TABLA DE MANTENIMIENTOS */}
       {!localLoading && !localError && mantenimientosFiltrados.length > 0 && (
         <div className="card">
           <div className="table-wrap">
@@ -164,10 +171,32 @@ export default function Mantenimientos({
               </tbody>
             </table>
           </div>
+
+          {/* NUEVO: botones de paginación */}
+          {totalPaginas > 1 && (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '16px', justifyContent: 'center' }}>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => setPaginaActual(prev => prev - 1)}
+                disabled={paginaActual === 1}
+              >
+                ← Anterior
+              </button>
+              <span style={{ color: 'var(--muted)', fontSize: '13px' }}>
+                Página {paginaActual} de {totalPaginas}
+              </span>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => setPaginaActual(prev => prev + 1)}
+                disabled={paginaActual === totalPaginas}
+              >
+                Siguiente →
+              </button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ESTADO VACÍO */}
       {!localLoading && !localError && mantenimientosFiltrados.length === 0 && (
         <div className="empty-state" style={{ padding: '30px' }}>
           <div className="empty-icon">🔧</div>

@@ -6,21 +6,31 @@ export default function MantenimientosTaller({ usuario, alCrearMantenimiento, re
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState('');
 
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+
   useEffect(() => {
     cargarMantenimientos();
-  }, [recargar, categoriaFiltro]);
+
+  }, [recargar, categoriaFiltro, paginaActual]);
 
   const cargarMantenimientos = async () => {
     setError('');
     setCargando(true);
     try {
-      const params = new URLSearchParams({ page: '1', limit: '100' });
+      const params = new URLSearchParams({ page: paginaActual, limit: '5' });
       if (categoriaFiltro !== 'todos') {
         params.set('categoria', categoriaFiltro);
       }
       const response = await api.get(`/mantenimientos?${params.toString()}`);
       const lista = response.data?.data?.mantenimientos || [];
+
+      const total = response.data?.data?.totalPages || 1;
+
       setMantenimientos(lista);
+
+      setTotalPaginas(total);
+
     } catch (err) {
       console.error('Error cargando mantenimientos:', err);
       setError('Error al cargar los mantenimientos.');
@@ -29,8 +39,10 @@ export default function MantenimientosTaller({ usuario, alCrearMantenimiento, re
     }
   };
 
-  const cambiarFiltro = (filtro) => {
+   const cambiarFiltro = (filtro) => {
     setCategoriaFiltro(filtro);
+    
+    setPaginaActual(1);
   };
 
   return (
@@ -103,6 +115,29 @@ export default function MantenimientosTaller({ usuario, alCrearMantenimiento, re
             </tbody>
           </table>
         </div>
+
+
+        {!cargando && totalPaginas > 1 && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '16px', justifyContent: 'center' }}>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => setPaginaActual(prev => prev - 1)}
+              disabled={paginaActual === 1}
+            >
+              ← Anterior
+            </button>
+            <span style={{ color: 'var(--muted)', fontSize: '13px' }}>
+              Página {paginaActual} de {totalPaginas}
+            </span>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => setPaginaActual(prev => prev + 1)}
+              disabled={paginaActual === totalPaginas}
+            >
+              Siguiente →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

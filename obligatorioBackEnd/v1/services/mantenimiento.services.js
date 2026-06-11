@@ -1,14 +1,29 @@
 import Mantenimiento from "../models/mantenimientos.model.js";
 import axios from 'axios';
+import Categoria from '../models/categoria.model.js';
 
-export const obtenerMantenimientoService = async (page, limit, categoria) => {
+/*export const obtenerMantenimientoService = async (page, limit, categoria) => {
   limit = Number(limit) || 5;
   page = Number(page) || 1;
   const skip = (page - 1) * limit;
   const filtro = {};
   if (categoria) {
     filtro.categoria = categoria;
+  }*/
+
+    export const obtenerMantenimientoService = async (page, limit, categoria) => {
+  limit = Number(limit) || 5;
+  page = Number(page) || 1;
+  const skip = (page - 1) * limit;
+  const filtro = {};
+  if (categoria) {
+    const categoriaDoc = await Categoria.findOne({ nombre: categoria });
+    if (categoriaDoc) {
+      filtro.categoria = categoriaDoc._id;
+    }
   }
+
+
   const totalMantenimientos = await Mantenimiento.countDocuments(filtro);
   const totalPages = Math.ceil(totalMantenimientos / limit);
   const mantenimientos = await Mantenimiento.find(filtro)
